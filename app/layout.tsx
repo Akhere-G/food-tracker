@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   const links = [
-    { name: "Dashboard", url: "/" },
+    { name: "Dashboard", url: "/dashboard" },
     { name: "Meals", url: "/meals" },
   ];
 
@@ -32,7 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     {
       title: "Account",
       links: [
-        { name: "Dashboard", url: "/" },
+        { name: "Dashboard", url: "/dashboard" },
         { name: "Meals", url: "/meals" },
         { name: "Settings", url: "/settings" },
       ],
@@ -40,7 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     {
       title: "Company",
       links: [
-        { name: "About", url: "/about" },
+        { name: "About", url: "/" },
         { name: "Contact", url: "/contact" },
         { name: "FAQ", url: "/faq" },
       ],

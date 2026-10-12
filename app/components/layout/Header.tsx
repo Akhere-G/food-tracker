@@ -23,7 +23,7 @@ export default function Header({
   const pathname = usePathname();
   return (
     <header className="bg-primary text-primary-foreground">
-      <div className="max-w-4xl mx-auto w-full p-4 flex items-baseline justify-between gap-4">
+      <div className="container p-4 flex items-baseline justify-between gap-4">
         <h2 className="font-bold text-2xl">
           <Link href="/">FoodTracker</Link>
         </h2>

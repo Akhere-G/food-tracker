@@ -128,3 +128,13 @@
     @apply font-sans;
   }
 }
+
+@layer components {
+  .title {
+    @apply tracking-tight font-semibold text-2xl;
+  }
+
+  .container {
+    @apply max-w-4xl mx-auto w-full;
+  }
+}
