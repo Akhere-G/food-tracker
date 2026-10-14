@@ -11,14 +11,15 @@ import {
 import { User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState } from "react";
 
 export default function Header({
   links,
   logout,
+  isAuthenticated,
 }: {
   links: { url: string; name: string }[];
-  logout: () => void;
+  logout?: () => void;
+  isAuthenticated?: boolean;
 }) {
   const pathname = usePathname();
   return (
@@ -40,28 +41,30 @@ export default function Header({
                 </li>
               );
             })}
-            <li className="relative">
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <Button className="ml-4 p-0 bg-primary-foreground text-primary w-10 h-10 hover:bg-primary-foreground/90">
-                      <User />
-                    </Button>
-                  }
-                />
-                <DropdownMenuContent>
-                  <DropdownMenuGroup>
-                    <DropdownMenuLabel>Account</DropdownMenuLabel>
-                    <DropdownMenuItem>
-                      <Link href="/settings">Settings</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={logout}>
-                      Log out
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </li>
+            {isAuthenticated && (
+              <li className="relative">
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button className="ml-4 p-0 bg-primary-foreground text-primary w-10 h-10 hover:bg-primary-foreground/90">
+                        <User />
+                      </Button>
+                    }
+                  />
+                  <DropdownMenuContent>
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel>Account</DropdownMenuLabel>
+                      <DropdownMenuItem>
+                        <Link href="/settings">Settings</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={logout}>
+                        Log out
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </li>
+            )}
           </ul>
         </nav>
       </div>
