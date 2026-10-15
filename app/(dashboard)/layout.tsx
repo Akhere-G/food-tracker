@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth-session";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { Home, Utensils } from "lucide-react";
 
 async function ProtectedDashboard({ children }: { children: React.ReactNode }) {
   const session = await getSession();
@@ -19,8 +20,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const links = [
-    { name: "Dashboard", url: "/dashboard" },
-    { name: "Meals", url: "/meals" },
+    { name: "Dashboard", url: "/dashboard", icon: <Home /> },
+    { name: "Meals", url: "/meals", icon: <Utensils /> },
   ];
 
   const groupedLinks = [
