@@ -1,5 +1,17 @@
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
+import { getSession } from "@/lib/auth-session";
+import { redirect } from "next/navigation";
+import { Suspense } from "react";
+
+async function ProtectedDashboard({ children }: { children: React.ReactNode }) {
+  const session = await getSession();
+  if (session) {
+    redirect("/dashboard");
+  }
+
+  return <>{children}</>;
+}
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   const links = [
@@ -35,7 +47,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <>
       <Header links={links} />
-      <main className="min-h-screen">{children}</main>
+      <main className="min-h-screen">
+        <Suspense fallback={<div>Loading...</div>}>
+          <ProtectedDashboard>{children}</ProtectedDashboard>
+        </Suspense>
+      </main>
       <Footer groupedLinks={groupedLinks} />
     </>
   );

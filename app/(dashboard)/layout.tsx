@@ -6,7 +6,6 @@ import Footer from "@/components/layout/Footer";
 
 async function ProtectedDashboard({ children }: { children: React.ReactNode }) {
   const session = await getSession();
-
   if (!session) {
     redirect("/login");
   }
@@ -50,17 +49,14 @@ export default function DashboardLayout({
     },
   ];
 
-  async function logout() {
-    "use server";
-    console.log("logout");
-  }
-
   return (
     <>
-      <Header links={links} />
-      <Suspense fallback={<div>Loading...</div>}>
-        <ProtectedDashboard>{children}</ProtectedDashboard>
-      </Suspense>
+      <Header links={links} isAuthenticated />
+      <main className="min-h-screen">
+        <Suspense fallback={<div>Loading...</div>}>
+          <ProtectedDashboard>{children}</ProtectedDashboard>
+        </Suspense>
+      </main>
       <Footer groupedLinks={groupedLinks} />
     </>
   );

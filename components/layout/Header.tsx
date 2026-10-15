@@ -8,20 +8,30 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { authClient } from "@/lib/auth-client";
 import { User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 export default function Header({
   links,
-  logout,
   isAuthenticated,
 }: {
   links: { url: string; name: string }[];
-  logout?: () => void;
   isAuthenticated?: boolean;
 }) {
+  const [isLoading, setIsLoading] = useState(false);
   const pathname = usePathname();
+  const logout = async () => {
+    setIsLoading(true);
+    try {
+      await authClient.signOut();
+      window.location.reload();
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <header className="bg-primary text-primary-foreground">
       <div className="container p-4 flex items-baseline justify-between gap-4">
@@ -57,7 +67,7 @@ export default function Header({
                       <DropdownMenuItem>
                         <Link href="/settings">Settings</Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={logout}>
+                      <DropdownMenuItem disabled={isLoading} onClick={logout}>
                         Log out
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
