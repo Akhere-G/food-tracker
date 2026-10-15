@@ -17,9 +17,11 @@ import { useState } from "react";
 export default function Header({
   links,
   isAuthenticated,
+  hideInMobile = false,
 }: {
   links: { url: string; name: string; icon?: React.ReactNode }[];
   isAuthenticated?: boolean;
+  hideInMobile?: boolean;
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const pathname = usePathname();
@@ -34,8 +36,8 @@ export default function Header({
   };
   return (
     <header>
-      <div className="absolute md:hidden bottom-0 bg-primary text-primary-foreground p-2 w-full">
-        <div className="">
+      {!hideInMobile && (
+        <div className="absolute md:hidden bottom-0 bg-primary text-primary-foreground p-2 w-full">
           <nav>
             <ul className="flex gap-8 w-full justify-around items-center">
               {links.map(({ url, name, icon }) => {
@@ -63,7 +65,7 @@ export default function Header({
             </ul>
           </nav>
         </div>
-      </div>
+      )}
 
       <div className="hidden md:block bg-primary text-primary-foreground">
         <div className="container p-4 flex items-baseline justify-between gap-4">

@@ -34,7 +34,7 @@ export default function Home() {
 
   return (
     <>
-      <Header links={links} />
+      <Header links={links} hideInMobile />
       <main className="min-h-screen">
         <div className="container  p-4">
           <section>

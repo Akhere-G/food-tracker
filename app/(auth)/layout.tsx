@@ -1,6 +1,7 @@
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import { getSession } from "@/lib/auth-session";
+import { LogInIcon, UserPlus } from "lucide-react";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
@@ -15,8 +16,8 @@ async function ProtectedDashboard({ children }: { children: React.ReactNode }) {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   const links = [
-    { name: "Login", url: "/login" },
-    { name: "Register", url: "/register" },
+    { name: "Login", url: "/login", icon: <LogInIcon /> },
+    { name: "Register", url: "/register", icon: <UserPlus /> },
   ];
 
   const groupedLinks = [
