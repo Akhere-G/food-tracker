@@ -78,6 +78,29 @@ export const foodNutrient = pgTable(
   ],
 );
 
+export const serving = pgTable(
+  "serving",
+  {
+    id: text().primaryKey(),
+    externalId: text("external_id").notNull(),
+    foodId: text("food_id")
+      .notNull()
+      .references(() => food.id, { onDelete: "cascade" }),
+    label: text().notNull(),
+    amountInGrams: numeric("amount_in_grams", {
+      precision: 12,
+      scale: 5,
+    }).notNull(),
+  },
+  (table) => [
+    check("serving_amount_positive", sql`${table.amountInGrams} > 0`),
+    unique("serving_external_id_food_id_unique").on(
+      table.externalId,
+      table.foodId,
+    ),
+  ],
+);
+
 export const meal = pgTable(
   "meal",
   {
@@ -106,11 +129,16 @@ export const mealEntry = pgTable(
       .references(() => meal.id, { onDelete: "cascade" }),
     foodId: text("food_id")
       .notNull()
-      .references(() => food.id, { onDelete: "cascade" }),
+      .references(() => food.id, { onDelete: "restrict" }),
     amountInGrams: numeric("amount_in_grams", {
       precision: 12,
       scale: 5,
     }).notNull(),
+    servingId: text().references(() => serving.id, { onDelete: "set null" }),
+    servingQuantity: numeric("serving_quantity", {
+      precision: 12,
+      scale: 5,
+    }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -121,16 +149,25 @@ export const mealEntry = pgTable(
   },
   (table) => [
     check("meal_entry_amount_positive", sql`${table.amountInGrams} > 0`),
+    check(
+      "meal_entry_serving_quantity_positive",
+      sql`${table.servingQuantity} IS NULL OR ${table.servingQuantity} > 0`,
+    ),
+    index("meal_entry_meal_id").on(table.mealId),
   ],
 );
 
 export const foodRelations = defineRelations(
-  { food, nutrient, foodNutrient, meal, user, mealEntry },
+  { food, nutrient, foodNutrient, meal, user, mealEntry, serving },
   (r) => ({
     food: {
       nutrients: r.many.foodNutrient({
         from: r.food.id,
         to: r.foodNutrient.foodId,
+      }),
+      servings: r.many.serving({
+        from: r.food.id,
+        to: r.serving.foodId,
       }),
     },
     nutrient: {
@@ -172,6 +209,16 @@ export const foodRelations = defineRelations(
       }),
       food: r.one.food({
         from: r.mealEntry.foodId,
+        to: r.food.id,
+      }),
+      serving: r.one.serving({
+        from: r.mealEntry.servingId,
+        to: r.serving.id,
+      }),
+    },
+    serving: {
+      food: r.one.food({
+        from: r.serving.foodId,
         to: r.food.id,
       }),
     },
