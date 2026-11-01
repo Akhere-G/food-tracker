@@ -1,4 +1,5 @@
 import { db } from "@/db";
+import type { NewMealEntry } from "@/db/food-schema";
 import { externalApiTypes, ExternalApiTypes } from "@/integrations/types";
 import { getSession } from "@/lib/auth-session";
 import { AppError } from "@/lib/errors";
@@ -88,7 +89,7 @@ export async function saveMeal(request: SaveMealRequest) {
       details: d,
       serving: s,
       quantity: e.servingQuantity!,
-      grams: s.amountInGrams * e.servingQuantity!,
+      grams: Number(s.amountInGrams) * e.servingQuantity!,
     };
   });
 
@@ -105,8 +106,8 @@ export async function saveMeal(request: SaveMealRequest) {
       foodIds.set(key, await repo.ensureFood(tx, d, nutrientIds));
     }
 
-    const mealId = await repo.insertMeal(tx, userId, eatenAt);
-    const entries = [];
+    const mealId = await repo.insertMeal(tx, { userId, eatenAt });
+    const entries: NewMealEntry[] = [];
     for (const r of resolved) {
       const foodId = foodIds.get(
         `${r.details.food.externalSource}:${r.details.food.externalId}`,
@@ -117,8 +118,8 @@ export async function saveMeal(request: SaveMealRequest) {
         servingId: r.serving
           ? await repo.ensureServing(tx, foodId, r.serving)
           : null,
-        servingQuantity: r.quantity,
-        amountInGrams: r.grams,
+        servingQuantity: r.quantity === null ? null : String(r.quantity),
+        amountInGrams: String(r.grams),
       });
     }
     await repo.insertMealEntries(tx, entries);

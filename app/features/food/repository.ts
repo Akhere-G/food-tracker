@@ -7,6 +7,12 @@ import {
   nutrient,
   serving,
 } from "@/db/food-schema";
+import type {
+  NewFoodNutrient,
+  NewMeal,
+  NewMealEntry,
+  NewServing,
+} from "@/db/food-schema";
 import { inArray } from "drizzle-orm";
 import { AppError } from "@/lib/errors";
 import { FoodImportData } from "./schemas";
@@ -43,11 +49,7 @@ export async function ensureFood(
 ) {
   const [inserted] = await tx
     .insert(food)
-    .values({
-      name: details.food.name,
-      externalId: details.food.externalId,
-      externalSource: details.food.externalSource,
-    })
+    .values(details.food)
     .onConflictDoNothing({ target: [food.externalId, food.externalSource] })
     .returning({ id: food.id });
 
@@ -63,14 +65,14 @@ export async function ensureFood(
     return existing.id;
   }
 
-  const rows = new Map<string, { nutrientId: string; amountPer100g: string }>();
+  const rows = new Map<
+    string,
+    Pick<NewFoodNutrient, "nutrientId" | "amountPer100g">
+  >();
   for (const n of details.nutrients) {
     const nutrientId = nutrientIds.get(n.nutrient.name);
     if (nutrientId) {
-      rows.set(nutrientId, {
-        nutrientId,
-        amountPer100g: String(n.amountPer100g),
-      });
+      rows.set(nutrientId, { nutrientId, amountPer100g: n.amountPer100g });
     }
   }
   if (rows.size > 0) {
@@ -84,16 +86,11 @@ export async function ensureFood(
 export async function ensureServing(
   tx: Tx,
   foodId: string,
-  s: { externalId: string; label: string; amountInGrams: number },
+  s: Omit<NewServing, "foodId">,
 ) {
   const [inserted] = await tx
     .insert(serving)
-    .values({
-      foodId,
-      externalId: s.externalId,
-      label: s.label,
-      amountInGrams: String(s.amountInGrams),
-    })
+    .values({ ...s, foodId })
     .onConflictDoNothing({ target: [serving.externalId, serving.foodId] })
     .returning({ id: serving.id });
   if (inserted) return inserted.id;
@@ -106,32 +103,11 @@ export async function ensureServing(
   return existing.id;
 }
 
-export async function insertMeal(tx: Tx, userId: string, eatenAt: Date) {
-  const [row] = await tx
-    .insert(meal)
-    .values({ userId, eatenAt })
-    .returning({ id: meal.id });
+export async function insertMeal(tx: Tx, values: NewMeal) {
+  const [row] = await tx.insert(meal).values(values).returning({ id: meal.id });
   return row.id;
 }
 
-export async function insertMealEntries(
-  tx: Tx,
-  entries: {
-    mealId: string;
-    foodId: string;
-    servingId: string | null;
-    servingQuantity: number | null;
-    amountInGrams: number;
-  }[],
-) {
-  await tx.insert(mealEntry).values(
-    entries.map((e) => ({
-      mealId: e.mealId,
-      foodId: e.foodId,
-      servingId: e.servingId,
-      servingQuantity:
-        e.servingQuantity === null ? null : String(e.servingQuantity),
-      amountInGrams: String(e.amountInGrams),
-    })),
-  );
+export async function insertMealEntries(tx: Tx, entries: NewMealEntry[]) {
+  await tx.insert(mealEntry).values(entries);
 }

@@ -1,39 +1,17 @@
 import * as z from "zod";
-
-export const food = z.object({
-  name: z.string(),
-  externalId: z.string(),
-  externalSource: z.string(),
-});
-
-export type Food = z.infer<typeof food>;
-
-export const nutrient = z.object({
-  name: z.string(),
-  unit: z.string(),
-});
-
-export type Nutrient = z.infer<typeof nutrient>;
-
-export const foodNutrient = z.object({
-  amountPer100g: z.number(),
-  nutrient: nutrient,
-});
-
-export type FoodNutrient = z.infer<typeof foodNutrient>;
-
-export const serving = z.object({
-  label: z.string(),
-  amountInGrams: z.number(),
-  externalId: z.string(),
-});
-
-export type Serving = z.infer<typeof serving>;
+import type {
+  NewFood,
+  NewFoodNutrient,
+  NewNutrient,
+  NewServing,
+} from "@/db/food-schema";
 
 export interface FoodImportData {
-  food: Food;
-  nutrients: FoodNutrient[];
-  servings: Serving[];
+  food: NewFood;
+  nutrients: (Pick<NewFoodNutrient, "amountPer100g"> & {
+    nutrient: NewNutrient;
+  })[];
+  servings: Omit<NewServing, "foodId">[];
 }
 
 export const searchQuery = z
@@ -48,7 +26,7 @@ export const externalFoodRef = z.object({
 
 export type ExternalFoodRef = z.infer<typeof externalFoodRef>;
 
-export const newMealEntry = z
+export const mealEntryInput = z
   .object({
     food: externalFoodRef,
     serving: z.object({ externalId: z.string().min(1) }).nullable(),
@@ -63,11 +41,11 @@ export const newMealEntry = z
     "Provide a serving and quantity, or an amount in grams",
   );
 
-export type NewMealEntry = z.infer<typeof newMealEntry>;
+export type MealEntryInput = z.infer<typeof mealEntryInput>;
 
 export const saveMealRequest = z.object({
   eatenAt: z.iso.datetime().optional(),
-  mealEntries: z.array(newMealEntry).min(1, "Add at least one food"),
+  mealEntries: z.array(mealEntryInput).min(1, "Add at least one food"),
 });
 
 export type SaveMealRequest = z.infer<typeof saveMealRequest>;

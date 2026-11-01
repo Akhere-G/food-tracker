@@ -1,6 +1,6 @@
 import { externalApiTypes } from "../types";
 import { FoodDetailResponse } from "./schema";
-import { FoodImportData, FoodNutrient } from "@/app/features/food/schemas";
+import { FoodImportData } from "@/app/features/food/schemas";
 import { NUTRIENTS, NutrientKey } from "@/app/features/food/nutrients";
 
 const NUTRIENT_IDS: Record<Exclude<NutrientKey, "unsaturatedFat">, number[]> = {
@@ -26,7 +26,7 @@ const NUTRIENT_IDS: Record<Exclude<NutrientKey, "unsaturatedFat">, number[]> = {
   vitaminB12: [1178], // 1246 is "added"
 };
 
-function mapNutrients(data: FoodDetailResponse): FoodNutrient[] {
+function mapNutrients(data: FoodDetailResponse): FoodImportData["nutrients"] {
   const byId = new Map(data.nutrients.map((n) => [n.nutrientId, n]));
   const amounts = new Map<NutrientKey, number>();
 
@@ -49,7 +49,7 @@ function mapNutrients(data: FoodDetailResponse): FoodNutrient[] {
   }
 
   return [...amounts].map(([key, amountPer100g]) => ({
-    amountPer100g,
+    amountPer100g: String(amountPer100g),
     nutrient: { ...NUTRIENTS[key] },
   }));
 }
@@ -63,7 +63,7 @@ export function MapApiToFoodDetail(data: FoodDetailResponse): FoodImportData {
   };
   const servings = data.servingSizes.map((serving) => ({
     label: serving.description,
-    amountInGrams: serving.amountGrams,
+    amountInGrams: String(serving.amountGrams),
     externalId: String(serving.id),
   }));
 
