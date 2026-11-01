@@ -1,23 +1,9 @@
-import { db } from "@/db";
-import {
-  food,
-  foodNutrient,
-  meal,
-  mealEntry,
-  nutrient,
-  serving,
-} from "@/db/food-schema";
-import type {
-  NewFoodNutrient,
-  NewMeal,
-  NewMealEntry,
-  NewServing,
-} from "@/db/food-schema";
+import type { Tx } from "@/db";
+import { food, foodNutrient, nutrient, serving } from "@/db/food-schema";
+import type { NewFoodNutrient, NewServing } from "@/db/food-schema";
 import { inArray } from "drizzle-orm";
 import { AppError } from "@/lib/errors";
 import { FoodImportData } from "./schemas";
-
-export type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 export async function getNutrientIds(
   tx: Tx,
@@ -101,13 +87,4 @@ export async function ensureServing(
   });
   if (!existing) throw new Error("Serving not found");
   return existing.id;
-}
-
-export async function insertMeal(tx: Tx, values: NewMeal) {
-  const [row] = await tx.insert(meal).values(values).returning({ id: meal.id });
-  return row.id;
-}
-
-export async function insertMealEntries(tx: Tx, entries: NewMealEntry[]) {
-  await tx.insert(mealEntry).values(entries);
 }

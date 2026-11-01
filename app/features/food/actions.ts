@@ -1,12 +1,7 @@
 "use server";
 
 import { runAction } from "@/lib/action";
-import {
-  externalFoodRef,
-  saveMealRequest,
-  SaveMealRequest,
-  searchQuery,
-} from "./schemas";
+import { externalFoodRef, searchQuery } from "./schemas";
 import * as foodService from "./service";
 
 export async function searchFoods(query: string) {
@@ -23,12 +18,5 @@ export async function getFoodDetails(externalId: string) {
         externalFoodRef.shape.externalId.parse(externalId),
       ),
     "Could not load food details. Please try again.",
-  );
-}
-
-export async function saveMeal(request: SaveMealRequest) {
-  return runAction(
-    async () => foodService.saveMeal(saveMealRequest.parse(request)),
-    "Sorry.. Could not save your meal. Something went wrong.",
   );
 }

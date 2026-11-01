@@ -6,3 +6,5 @@ export const db = drizzle({
   connection: process.env.DATABASE_URL!,
   relations: schema.foodRelations,
 });
+
+export type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];

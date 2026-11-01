@@ -1,9 +1,5 @@
 export type AppErrorCode =
-  | "unauthorized"
-  | "validation"
-  | "not_found"
-  | "external_api"
-  | "unknown";
+  "unauthorized" | "validation" | "not_found" | "external_api" | "unknown";
 
 export class AppError extends Error {
   readonly code: AppErrorCode;
