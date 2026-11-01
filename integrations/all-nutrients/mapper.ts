@@ -1,6 +1,6 @@
 import { externalApiTypes } from "../types";
 import { FoodDetailResponse } from "./schema";
-import { FoodImportData } from "@/app/features/food/types";
+import { FoodImportData } from "@/app/features/food/schemas";
 
 export function MapApiToFoodDetail(data: FoodDetailResponse): FoodImportData {
   const food = {
