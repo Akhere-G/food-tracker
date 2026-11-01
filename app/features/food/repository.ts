@@ -8,30 +8,32 @@ import {
   serving,
 } from "@/db/food-schema";
 import { inArray } from "drizzle-orm";
+import { AppError } from "@/lib/errors";
 import { FoodImportData } from "./schemas";
 
 export type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
-export async function ensureNutrients(
+export async function getNutrientIds(
   tx: Tx,
   items: { name: string; unit: string }[],
 ) {
-  const unique = [...new Map(items.map((n) => [n.name, n])).values()];
-  if (unique.length === 0) return new Map<string, string>();
+  const names = [...new Set(items.map((n) => n.name))];
+  if (names.length === 0) return new Map<string, string>();
 
-  await tx.insert(nutrient).values(unique).onConflictDoNothing({
-    target: nutrient.name,
-  });
   const rows = await tx
     .select({ id: nutrient.id, name: nutrient.name })
     .from(nutrient)
-    .where(
-      inArray(
-        nutrient.name,
-        unique.map((n) => n.name),
-      ),
+    .where(inArray(nutrient.name, names));
+  const ids = new Map(rows.map((r) => [r.name, r.id]));
+
+  const missing = names.filter((n) => !ids.has(n));
+  if (missing.length > 0) {
+    console.error(
+      `Nutrients missing from db (run db:seed): ${missing.join(", ")}`,
     );
-  return new Map(rows.map((r) => [r.name, r.id]));
+    throw new AppError("Nutrition data isn't set up correctly.", "unknown");
+  }
+  return ids;
 }
 
 export async function ensureFood(

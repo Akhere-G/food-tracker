@@ -1,24 +1,23 @@
 import { db } from "@/db";
 import { externalApiTypes, ExternalApiTypes } from "@/integrations/types";
 import { getSession } from "@/lib/auth-session";
+import { AppError } from "@/lib/errors";
 import { FoodApiProviderFactory } from "./providers";
 import * as repo from "./repository";
 import { FoodImportData, SaveMealRequest } from "./schemas";
-
-export class FoodServiceError extends Error {}
 
 const DEFAULT_SOURCE: ExternalApiTypes = externalApiTypes.allthenutrients;
 
 function providerFor(source: string) {
   if (!(source in externalApiTypes)) {
-    throw new FoodServiceError(`Unknown food source: ${source}`);
+    throw new AppError(`Unknown food source: ${source}`, "validation");
   }
   return FoodApiProviderFactory(source as ExternalApiTypes);
 }
 
 async function requireUserId() {
   const session = await getSession();
-  if (!session) throw new FoodServiceError("You need to be signed in.");
+  if (!session) throw new AppError("You need to be signed in.", "unauthorized");
   return session.user.id;
 }
 
@@ -60,9 +59,12 @@ export async function saveMeal(request: SaveMealRequest) {
       }),
     );
   } catch (err) {
-    if (err instanceof FoodServiceError) throw err;
-    console.error("Fetching food details failed", err);
-    throw new FoodServiceError("Could not load details for one of the foods.");
+    if (err instanceof AppError) throw err;
+    throw new AppError(
+      "Could not load details for one of the foods.",
+      "external_api",
+      { cause: err },
+    );
   }
 
   const resolved = request.mealEntries.map((e) => {
@@ -77,7 +79,10 @@ export async function saveMeal(request: SaveMealRequest) {
     }
     const s = d.servings.find((s) => s.externalId === e.serving!.externalId);
     if (!s) {
-      throw new FoodServiceError(`Serving not available for ${d.food.name}.`);
+      throw new AppError(
+        `Serving not available for ${d.food.name}.`,
+        "validation",
+      );
     }
     return {
       details: d,
@@ -90,7 +95,7 @@ export async function saveMeal(request: SaveMealRequest) {
   const eatenAt = request.eatenAt ? new Date(request.eatenAt) : new Date();
 
   return await db.transaction(async (tx) => {
-    const nutrientIds = await repo.ensureNutrients(
+    const nutrientIds = await repo.getNutrientIds(
       tx,
       [...details.values()].flatMap((d) => d.nutrients.map((n) => n.nutrient)),
     );

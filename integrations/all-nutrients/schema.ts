@@ -15,7 +15,7 @@ export const foodDetail = z.object({
   slug: z.string(),
   description: z.string().nullable(),
   groupName: z.string(),
-  groupId: z.string().nullable(),
+  groupId: z.union([z.string(), z.number()]).nullable(),
   sourceDatabase: z.string(),
   sourceUrl: z.string(),
 });
