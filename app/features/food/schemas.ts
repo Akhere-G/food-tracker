@@ -30,34 +30,44 @@ export const serving = z.object({
 
 export type Serving = z.infer<typeof serving>;
 
-export const meal = z.object({
-  eatenAt: z.string(),
-});
-
-export type Meal = z.infer<typeof meal>;
-
-export const mealEntry = z.object({
-  amountInGrams: z.number(),
-  serving: serving.nullable(),
-  servingQuantity: z.number().nullable(),
-});
-
-export type MealEntry = z.infer<typeof mealEntry>;
-
-export const newMealEntry = mealEntry.extend({
-  food: food,
-});
-
-export type NewMealEntry = z.infer<typeof newMealEntry>;
-
 export interface FoodImportData {
   food: Food;
   nutrients: FoodNutrient[];
   servings: Serving[];
 }
 
+export const searchQuery = z
+  .string()
+  .trim()
+  .min(2, "Enter at least 2 characters");
+
+export const externalFoodRef = z.object({
+  externalId: z.string().min(1),
+  externalSource: z.string().min(1),
+});
+
+export type ExternalFoodRef = z.infer<typeof externalFoodRef>;
+
+export const newMealEntry = z
+  .object({
+    food: externalFoodRef,
+    serving: z.object({ externalId: z.string().min(1) }).nullable(),
+    servingQuantity: z.number().positive().nullable(),
+    amountInGrams: z.number().positive().nullable(),
+  })
+  .refine(
+    (e) =>
+      e.serving
+        ? e.servingQuantity !== null
+        : e.amountInGrams !== null && e.servingQuantity === null,
+    "Provide a serving and quantity, or an amount in grams",
+  );
+
+export type NewMealEntry = z.infer<typeof newMealEntry>;
+
 export const saveMealRequest = z.object({
-  mealEntries: z.array(newMealEntry),
+  eatenAt: z.iso.datetime().optional(),
+  mealEntries: z.array(newMealEntry).min(1, "Add at least one food"),
 });
 
 export type SaveMealRequest = z.infer<typeof saveMealRequest>;

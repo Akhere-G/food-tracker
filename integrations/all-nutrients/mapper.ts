@@ -5,7 +5,7 @@ import { FoodImportData } from "@/app/features/food/schemas";
 export function MapApiToFoodDetail(data: FoodDetailResponse): FoodImportData {
   const food = {
     name: data.food.name,
-    externalId: data.food.id,
+    externalId: data.food.slug,
     externalSource: externalApiTypes.allthenutrients,
   };
   const nutrients = data.nutrients.map((nutrient) => ({

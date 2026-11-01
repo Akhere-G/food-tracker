@@ -14,7 +14,9 @@ import {
 export const food = pgTable(
   "food",
   {
-    id: text().primaryKey(),
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
     name: text().notNull(),
     externalId: text("external_id").notNull(),
     externalSource: text("external_source").notNull(),
@@ -35,7 +37,9 @@ export const food = pgTable(
 );
 
 export const nutrient = pgTable("nutrient", {
-  id: text().primaryKey(),
+  id: text()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   name: text().notNull().unique(),
   unit: text().notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -81,7 +85,9 @@ export const foodNutrient = pgTable(
 export const serving = pgTable(
   "serving",
   {
-    id: text().primaryKey(),
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
     externalId: text("external_id").notNull(),
     foodId: text("food_id")
       .notNull()
@@ -104,7 +110,9 @@ export const serving = pgTable(
 export const meal = pgTable(
   "meal",
   {
-    id: text().primaryKey(),
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
     userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
@@ -123,7 +131,9 @@ export const meal = pgTable(
 export const mealEntry = pgTable(
   "meal_entry",
   {
-    id: text().primaryKey(),
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
     mealId: text("meal_id")
       .notNull()
       .references(() => meal.id, { onDelete: "cascade" }),
@@ -134,7 +144,9 @@ export const mealEntry = pgTable(
       precision: 12,
       scale: 5,
     }).notNull(),
-    servingId: text().references(() => serving.id, { onDelete: "set null" }),
+    servingId: text("serving_id").references(() => serving.id, {
+      onDelete: "set null",
+    }),
     servingQuantity: numeric("serving_quantity", {
       precision: 12,
       scale: 5,

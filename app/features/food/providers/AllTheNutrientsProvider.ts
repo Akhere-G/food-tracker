@@ -8,6 +8,7 @@ export class AllTheNutrientsProvider implements FoodApiProvider {
   async searchFoods(query: string): Promise<FoodSearchItem[]> {
     return await api.searchFoods(query);
   }
+
   async getFoodDetails(slug: string): Promise<FoodImportData> {
     const result = await api.getFoodDetails(slug);
     return MapApiToFoodDetail(result);

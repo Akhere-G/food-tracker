@@ -12,4 +12,5 @@ export {
   meal,
   mealEntry,
   nutrient,
+  serving,
 } from "./food-schema";
