@@ -259,3 +259,8 @@ export type MealEntry = typeof mealEntry.$inferSelect & {
   food: Food;
 };
 export type NewMealEntry = typeof mealEntry.$inferInsert;
+
+export type NewMealEntryWithFo0d = typeof mealEntry.$inferInsert & {
+  serving: Serving | null;
+  food: Food;
+};

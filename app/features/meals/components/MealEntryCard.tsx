@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { MealEntry } from "@/db/food-schema";
+import { NewMealEntryWithFood } from "@/db/food-schema";
 import { Dot, Pencil } from "lucide-react";
 import { MacroShortSymbol } from "../../food/nutrients";
 
-export default function MealmealEntryCard({
+export default function MealEntryCard({
   mealEntry,
 }: {
-  mealEntry: MealEntry;
+  mealEntry: NewMealEntryWithFood;
 }) {
   return (
     <div className="p-4 flex flex-col gap-2 bg-card" key={mealEntry.id}>
