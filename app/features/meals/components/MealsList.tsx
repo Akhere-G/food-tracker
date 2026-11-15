@@ -21,7 +21,8 @@ export default function MealsList({ meals }: { meals: Meal[] }) {
   return (
     <div className="flex flex-col gap-4 px-2">
       {groupedMeals.map(([hour, meals]) => (
-        <div key={hour}>
+        <div className="relative flex flex-col" key={hour}>
+          <div className="w-2 h-full flex-1 left-6 top-7 -z-1 bg-muted absolute" />
           <div className="flex gap-2 items-center">
             <p className="w-14 h-7 bg-secondary flex center items-center justify-center  rounded-full">
               {String(hour).padStart(2, "0")}:00
