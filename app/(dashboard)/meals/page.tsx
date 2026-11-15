@@ -1,9 +1,7 @@
 import MealsHeader from "@/app/features/meals/components/MealsHeader";
 import MealsList from "@/app/features/meals/components/MealsList";
-import { Meal } from "@/db/food-schema";
 import React from "react";
-
-const meals: Meal[] = [];
+import { meals } from "./data";
 
 export default function MealsPage() {
   return (

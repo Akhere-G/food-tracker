@@ -37,7 +37,7 @@ export default function Header({
   return (
     <header>
       {!hideInMobile && (
-        <div className="absolute md:hidden bottom-0 bg-primary text-primary-foreground p-2 w-full">
+        <div className="fixed z-1  md:hidden bottom-0 bg-primary text-primary-foreground p-2 w-full">
           <nav>
             <ul className="flex gap-8 w-full justify-around items-center">
               {links.map(({ url, name, icon }) => {

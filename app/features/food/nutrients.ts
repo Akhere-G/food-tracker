@@ -1,25 +1,57 @@
+export const MACROS = {
+  Calories: { name: "Calories", unit: "kcal", dailyMax: 2500 },
+  Protein: { name: "Protein", unit: "g", dailyMax: 55 },
+  "Total fat": { name: "Total fat", unit: "g", dailyMax: 78 },
+  "Total carbohydrates": {
+    name: "Total carbohydrates",
+    unit: "g",
+    dailyMax: 260,
+  },
+  "Total sugars": { name: "Total sugars", unit: "g", dailyMax: 90 },
+} as const;
+
+export const SUBMACROS = {
+  "Saturated fat": { name: "Saturated fat", unit: "g", dailyMax: 20 },
+  "Monounsaturated fat": {
+    name: "Monounsaturated fat",
+    unit: "g",
+    dailyMax: 40,
+  },
+  "Polyunsaturated fat": {
+    name: "Polyunsaturated fat",
+    unit: "g",
+    dailyMax: 20,
+  },
+  "Unsaturated fat": {
+    name: "Unsaturated fat",
+    unit: "g",
+    dailyMax: 60,
+  }, // derived: mono + poly
+  "Trans fat": { name: "Trans fat", unit: "g", dailyMax: 2 },
+  Fibre: { name: "Fibre", unit: "g", dailyMax: 30 },
+  "Added sugar": { name: "Added sugar", unit: "g", dailyMax: 30 },
+} as const;
+
+export const MINERALS = {
+  Iron: { name: "Iron", unit: "mg", dailyMax: 14 },
+  Calcium: { name: "Calcium", unit: "mg", dailyMax: 700 },
+  Sodium: { name: "Sodium", unit: "mg", dailyMax: 2400 },
+  Magnesium: { name: "Magnesium", unit: "mg", dailyMax: 300 },
+  Potassium: { name: "Potassium", unit: "mg", dailyMax: 3500 },
+} as const;
+
+export const VITAMINS = {
+  "Vitamin A": { name: "Vitamin A", unit: "µg", dailyMax: 700 }, // RAE
+  "Vitamin C": { name: "Vitamin C", unit: "mg", dailyMax: 40 },
+  "Vitamin D": { name: "Vitamin D", unit: "µg", dailyMax: 10 },
+  "Vitamin B12": { name: "Vitamin B12", unit: "µg", dailyMax: 1.5 },
+};
+
 export const NUTRIENTS = {
-  calories: { name: "Calories", unit: "kcal" },
-  protein: { name: "Protein", unit: "g" },
-  totalFat: { name: "Total fat", unit: "g" },
-  saturatedFat: { name: "Saturated fat", unit: "g" },
-  monounsaturatedFat: { name: "Monounsaturated fat", unit: "g" },
-  polyunsaturatedFat: { name: "Polyunsaturated fat", unit: "g" },
-  unsaturatedFat: { name: "Unsaturated fat", unit: "g" }, // derived: mono + poly
-  transFat: { name: "Trans fat", unit: "g" },
-  totalCarbs: { name: "Total carbohydrates", unit: "g" },
-  fibre: { name: "Fibre", unit: "g" },
-  totalSugars: { name: "Total sugars", unit: "g" },
-  addedSugar: { name: "Added sugar", unit: "g" },
-  iron: { name: "Iron", unit: "mg" },
-  calcium: { name: "Calcium", unit: "mg" },
-  sodium: { name: "Sodium", unit: "mg" },
-  magnesium: { name: "Magnesium", unit: "mg" },
-  potassium: { name: "Potassium", unit: "mg" },
-  vitaminA: { name: "Vitamin A", unit: "µg" }, // RAE
-  vitaminC: { name: "Vitamin C", unit: "mg" },
-  vitaminD: { name: "Vitamin D", unit: "µg" },
-  vitaminB12: { name: "Vitamin B12", unit: "µg" },
+  ...MACROS,
+  ...MINERALS,
+  ...VITAMINS,
+  ...SUBMACROS,
 } as const;
 
 export type NutrientKey = keyof typeof NUTRIENTS;

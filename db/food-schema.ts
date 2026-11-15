@@ -237,20 +237,25 @@ export const foodRelations = defineRelations(
   }),
 );
 
-export type Food = typeof food.$inferSelect;
+export type Food = typeof food.$inferSelect & { nutrients: FoodNutrient[] };
 export type NewFood = typeof food.$inferInsert;
 
 export type Nutrient = typeof nutrient.$inferSelect;
 export type NewNutrient = typeof nutrient.$inferInsert;
 
-export type FoodNutrient = typeof foodNutrient.$inferSelect;
+export type FoodNutrient = typeof foodNutrient.$inferSelect & {
+  nutrient: Nutrient;
+};
 export type NewFoodNutrient = typeof foodNutrient.$inferInsert;
 
 export type Serving = typeof serving.$inferSelect;
 export type NewServing = typeof serving.$inferInsert;
 
-export type Meal = typeof meal.$inferSelect;
+export type Meal = typeof meal.$inferSelect & { entries: MealEntry[] };
 export type NewMeal = typeof meal.$inferInsert;
 
-export type MealEntry = typeof mealEntry.$inferSelect;
+export type MealEntry = typeof mealEntry.$inferSelect & {
+  serving: Serving | null;
+  food: Food;
+};
 export type NewMealEntry = typeof mealEntry.$inferInsert;
