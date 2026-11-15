@@ -3,6 +3,7 @@ import { Dot, Pencil, Plus } from "lucide-react";
 import React from "react";
 import { MacroShortSymbol } from "../../food/nutrients";
 import { Button } from "@/components/ui/button";
+import MealmealEntryCard from "./MealEntryCard";
 
 export default function MealsList({ meals }: { meals: Meal[] }) {
   const hours: Record<number, Meal[]> = {};
@@ -32,62 +33,10 @@ export default function MealsList({ meals }: { meals: Meal[] }) {
           <div>
             <div className="flex flex-col gap-4 mt-2 ml-4 md:ml-8 lg:ml-16">
               {meals.map((meal) => (
-                <div key={meal.id}>
-                  <div className="flex flex-col gap-4 rounded-md">
-                    {meal.entries.map((entry) => (
-                      <div
-                        className="p-4 flex flex-col gap-2 bg-card"
-                        key={entry.id}
-                      >
-                        <div>
-                          <div className="flex justify-between items-center mb-2">
-                            <div className="flex text-sm">
-                              <p>{entry.food.name}</p>
-                              <Dot />
-                              <div className="flex items-center">
-                                {!!entry.serving && (
-                                  <p className="text-xs text-secondary-foreground">
-                                    {entry.servingQuantity}
-                                    <span className="ml-2">
-                                      {entry.serving?.label}
-                                    </span>
-                                  </p>
-                                )}
-                                {!entry.serving && (
-                                  <p>{entry.amountInGrams} g</p>
-                                )}
-                              </div>
-                            </div>
-                            <Button>
-                              <Pencil />
-                            </Button>
-                          </div>
-                          <div className="flex flex-wrap text-xs gap-2">
-                            {entry.food.nutrients.map((nutrient) => {
-                              const symbol =
-                                MacroShortSymbol[nutrient.nutrient.name];
-                              if (!symbol) {
-                                return null;
-                              }
-
-                              return (
-                                <span
-                                  className="flex bg-secondary rounded-full px-2 items-center"
-                                  key={nutrient.nutrientId}
-                                >
-                                  {symbol}{" "}
-                                  {(Number(nutrient.amountPer100g) *
-                                    Number(entry.amountInGrams)) /
-                                    100}
-                                  {nutrient.nutrient.unit}
-                                </span>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                <div key={meal.id} className="flex flex-col gap-4 rounded-md">
+                  {meal.entries.map((entry) => (
+                    <MealmealEntryCard key={entry.id} mealEntry={entry} />
+                  ))}
                 </div>
               ))}
             </div>
