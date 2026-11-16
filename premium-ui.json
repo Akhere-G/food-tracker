@@ -15,7 +15,7 @@
     "build": "npm run build"
   },
   "evidence": {
-    "crudFullFlow": "app/features/meals/__tests__/meal-domain.test.ts",
-    "failurePaths": "app/features/onboarding/__tests__/nutrition-plan.test.ts"
+    "crudFullFlow": "app/features/meals/utils.test.ts",
+    "failurePaths": "app/features/onboarding/nutrition-plan.test.ts"
   }
 }

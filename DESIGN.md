@@ -3,6 +3,7 @@ version: alpha
 name: "FoodTracker"
 description: "A warm nutrition ledger that helps people return to sustainable progress without shame."
 colors:
+  primary: "oklch(0.52 0.16 25)"
   canvas: "oklch(0.985 0.008 60)"
   ink: "oklch(0.22 0.015 25)"
   surface: "oklch(1 0 0)"

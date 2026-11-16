@@ -21,14 +21,14 @@ The current user brief is authoritative for onboarding, a 30-day soft-delete rec
 
 ## Canonical UI Map
 
-| Capability | Canonical owner | Allowed variants | Verification |
-|---|---|---|---|
-| Select/Listbox | Native select when OS popup is acceptable | native | keyboard + mobile |
-| Date | Native date input | native | locale + keyboard |
-| Form | Zod schema plus shared fields | create / edit / wizard | unit + browser |
-| Scrollbar | `app/globals.css` | stable-gutter exception | computed style |
-| Toast | Sonner provider | success / error | live-region inspection |
-| CRUD | feature action/service/repository or route handler | create / replace / soft-delete | unit + route flow |
+| Capability | Canonical owner | Source of truth | Allowed variants | Verification |
+|---|---|---|---|---|
+| Select/Listbox | Native select when OS popup is acceptable | `OnboardingFields` | native | keyboard + mobile |
+| Date | Native date input | `MealEditor` | native | locale + keyboard |
+| Form | Zod schema plus shared fields | feature schemas | create / edit / wizard | unit + browser |
+| Scrollbar | Global inherited theme | `app/globals.css` | stable-gutter exception | computed style |
+| Toast | Sonner provider | root layout | success / error | live-region inspection |
+| CRUD | Feature action/service/repository or route handler | meal feature | create / replace / soft-delete | unit + route flow |
 
 ## Flow ledger
 
