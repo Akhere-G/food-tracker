@@ -73,4 +73,5 @@ export async function getMeals({
 function revalidateMealViews() {
   revalidatePath("/meals");
   revalidatePath("/dashboard");
+  revalidatePath("/nutrition");
 }
