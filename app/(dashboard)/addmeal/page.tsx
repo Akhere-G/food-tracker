@@ -1,34 +1,30 @@
-import { format } from "date-fns";
 import { TZDate } from "@date-fns/tz";
 import AddMealForm from "@/app/features/meals/components/AddMealForm";
+import {
+  resolveMealFormDateTime,
+  type MealFormSearchParams,
+} from "@/app/features/meals/form-date-time";
 import { getOnboardingProfile, getPreferences } from "@/app/features/onboarding/service";
 import { requireUserId } from "@/lib/auth-session";
 
 export default async function AddMealPage({
   searchParams,
 }: {
-  searchParams: Promise<{ date?: string; time?: string }>;
+  searchParams: Promise<MealFormSearchParams>;
 }) {
-  const params = await searchParams;
-  const userId = await requireUserId();
+  const [params, userId] = await Promise.all([searchParams, requireUserId()]);
   const [profile, preferences] = await Promise.all([
     getOnboardingProfile(userId),
     getPreferences(userId),
   ]);
-  const now = profile ? TZDate.tz(profile.timezone) : new Date();
-  const initialDate = /^\d{4}-\d{2}-\d{2}$/.test(params.date ?? "")
-    ? params.date!
-    : format(now, "yyyy-MM-dd");
-  const initialTime = /^\d{2}:\d{2}$/.test(params.time ?? "")
-    ? params.time!
-    : format(now, "HH:mm");
+  const timezone = profile?.timezone ?? "Europe/London";
+  const formDateTime = resolveMealFormDateTime(params, TZDate.tz(timezone));
 
   return (
     <AddMealForm
-      initialDate={initialDate}
-      initialTime={initialTime}
+      {...formDateTime}
       energyUnit={preferences?.energyUnit === "kj" ? "kj" : "kcal"}
-      timezone={profile?.timezone ?? "Europe/London"}
+      timezone={timezone}
     />
   );
 }

@@ -1,4 +1,6 @@
 import { TZDate } from "@date-fns/tz";
+import { isValid } from "date-fns";
+import { isValidDateInput, isValidTimeInput } from "@/lib/date-input";
 import type { ReplaceMealRequest } from "./schemas";
 import type { MealEntryData } from "./types";
 
@@ -15,7 +17,7 @@ export function createMealRequest({
   timezone,
   entries,
 }: CreateMealRequestInput): ReplaceMealRequest {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !/^\d{2}:\d{2}$/.test(time)) {
+  if (!isValidDateInput(date) || !isValidTimeInput(time)) {
     throw new Error("Choose a valid date and time.");
   }
 
@@ -30,7 +32,7 @@ export function createMealRequest({
     timezone,
   );
 
-  if (Number.isNaN(eatenAt.getTime())) {
+  if (!isValid(eatenAt)) {
     throw new Error("Choose a valid date and time.");
   }
 

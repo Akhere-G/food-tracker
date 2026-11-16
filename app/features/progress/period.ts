@@ -13,6 +13,7 @@ import {
   startOfWeek,
   startOfYear,
 } from "date-fns";
+import { isValidDateInput } from "@/lib/date-input";
 
 export type ProgressPeriod = "week" | "month" | "year";
 
@@ -21,7 +22,7 @@ export function parseProgressPeriod(value?: string): ProgressPeriod {
 }
 
 function zonedAnchor(timezone: string, value?: string) {
-  if (/^\d{4}-\d{2}-\d{2}$/.test(value ?? "")) {
+  if (isValidDateInput(value)) {
     const date = new TZDate(`${value}T12:00:00`, timezone);
     if (isValid(date)) return date;
   }
