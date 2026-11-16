@@ -35,6 +35,7 @@ test("persists a guest onboarding draft and hands off to registration", async ({
   await page.getByRole("button", { name: "Continue" }).click();
   await page.getByRole("button", { name: "Continue" }).click();
   await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByRole("button", { name: "Continue" }).click();
   await page.getByRole("button", { name: "Create my account" }).click();
 
   await expect(page).toHaveURL(/\/register\?onboarding=1$/);

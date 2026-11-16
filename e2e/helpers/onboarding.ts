@@ -24,6 +24,12 @@ export async function completeGuestOnboarding(page: Page) {
   ).toBeVisible();
   await page.getByRole("button", { name: "Continue" }).click();
   await expect(
+    page.getByRole("heading", {
+      name: "Choose what deserves a little more attention",
+    }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Continue" }).click();
+  await expect(
     page.getByRole("heading", { name: "Your plan is ready" }),
   ).toBeVisible();
 }
