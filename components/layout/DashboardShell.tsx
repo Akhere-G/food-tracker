@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Home, Settings, Soup, Utensils } from "lucide-react";
+import { ChartNoAxesCombined, Home, Settings, Soup, Utensils } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 const navigation = [
   { label: "Overview", href: "/dashboard", icon: Home },
   { label: "Meals", href: "/meals", icon: Utensils },
+  { label: "Nutrition", href: "/nutrition", icon: ChartNoAxesCombined },
   { label: "Settings", href: "/settings", icon: Settings },
 ] as const;
 
