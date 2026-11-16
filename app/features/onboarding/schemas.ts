@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { differenceInYears } from "date-fns";
 import {
   ACTIVITY_LEVELS,
   CHALLENGES,
@@ -25,7 +26,7 @@ export const onboardingInputSchema = z
   })
   .superRefine((value, context) => {
     const birthDate = new Date(`${value.dateOfBirth}T12:00:00`);
-    const age = new Date().getFullYear() - birthDate.getFullYear();
+    const age = differenceInYears(new Date(), birthDate);
     if (age < 18 || age > 100) {
       context.addIssue({
         code: "custom",

@@ -24,4 +24,9 @@ describe("period ranges", () => {
     expect(format(range.start, "yyyy-MM-dd")).toBe("2026-01-01");
     expect(format(range.end, "yyyy-MM-dd")).toBe("2027-01-01");
   });
+
+  it("falls back safely when URL date state is invalid", () => {
+    const range = dayRange("Europe/London", "not-a-date");
+    expect(Number.isNaN(range.start.getTime())).toBe(false);
+  });
 });

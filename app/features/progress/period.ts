@@ -8,6 +8,7 @@ import {
   endOfWeek,
   endOfYear,
   format,
+  isValid,
   startOfMonth,
   startOfWeek,
   startOfYear,
@@ -19,14 +20,20 @@ export function parseProgressPeriod(value?: string): ProgressPeriod {
   return value === "month" || value === "year" ? value : "week";
 }
 
+function zonedAnchor(timezone: string, value?: string) {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value ?? "")) {
+    const date = new TZDate(`${value}T12:00:00`, timezone);
+    if (isValid(date)) return date;
+  }
+  return TZDate.tz(timezone);
+}
+
 export function periodRange(
   period: ProgressPeriod,
   timezone: string,
   anchor?: string,
 ) {
-  const now = anchor
-    ? new TZDate(`${anchor}T12:00:00`, timezone)
-    : TZDate.tz(timezone);
+  const now = zonedAnchor(timezone, anchor);
   const start =
     period === "week"
       ? startOfWeek(now, { weekStartsOn: 1 })
@@ -66,9 +73,7 @@ export function periodRange(
 }
 
 export function dayRange(timezone: string, date?: string) {
-  const current = date
-    ? new TZDate(`${date}T12:00:00`, timezone)
-    : TZDate.tz(timezone);
+  const current = zonedAnchor(timezone, date);
   const start = new TZDate(
     current.getFullYear(),
     current.getMonth(),

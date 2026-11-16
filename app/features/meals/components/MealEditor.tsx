@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { TZDate } from "@date-fns/tz";
 import { useRouter } from "next/navigation";
 import { Plus, Save } from "lucide-react";
@@ -31,12 +31,8 @@ type Props = {
   timezone: string;
 };
 
-function draftKey(entry: MealEntryData) {
-  return `${entry.foodImportData.food.externalSource}:${entry.foodImportData.food.externalId}`;
-}
-
 export default function MealEditor({ mode, mealId, initialEntries = [], initialDate, initialTime, energyUnit = "kcal", timezone }: Props) {
-  const [entries, setEntries] = useState(() => new Map(initialEntries.map((entry) => [draftKey(entry), entry])));
+  const [entries, setEntries] = useState(initialEntries);
   const [date, setDate] = useState(initialDate);
   const [time, setTime] = useState(initialTime);
   const [foodDialogOpen, setFoodDialogOpen] = useState(false);
@@ -44,22 +40,39 @@ export default function MealEditor({ mode, mealId, initialEntries = [], initialD
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  const draftEntries = useMemo(() => [...entries.values()], [entries]);
 
   function addEntry(entry: MealEntryData) {
-    setEntries((current) => new Map(current).set(draftKey(entry), entry));
+    setEntries((current) => [...current, entry]);
   }
 
-  function removeEntry(entry: MealEntryData) {
-    setEntries((current) => {
-      const next = new Map(current);
-      next.delete(draftKey(entry));
-      return next;
-    });
+  function removeEntry(index: number) {
+    setEntries((current) => current.filter((_, itemIndex) => itemIndex !== index));
+  }
+
+  function updateAmount(index: number, amount: number) {
+    if (!Number.isFinite(amount) || amount <= 0) return;
+    setEntries((current) => current.map((entry, itemIndex) => {
+      if (itemIndex !== index) return entry;
+      const serving = entry.mealEntryInput.serving
+        ? entry.foodImportData.servings.find(
+            (item) => item.externalId === entry.mealEntryInput.serving?.externalId,
+          )
+        : null;
+      return {
+        ...entry,
+        mealEntryInput: {
+          ...entry.mealEntryInput,
+          servingQuantity: serving ? amount : null,
+          amountInGrams: serving
+            ? Number(serving.amountInGrams) * amount
+            : amount,
+        },
+      };
+    }));
   }
 
   async function submit() {
-    if (draftEntries.length === 0) {
+    if (entries.length === 0) {
       setError("Add at least one food before saving the meal.");
       return;
     }
@@ -69,7 +82,7 @@ export default function MealEditor({ mode, mealId, initialEntries = [], initialD
     const [hour, minute] = time.split(":").map(Number);
     const request = {
       eatenAt: new TZDate(year, month - 1, day, hour, minute, timezone).toISOString(),
-      mealEntries: draftEntries.map((entry) => entry.mealEntryInput),
+      mealEntries: entries.map((entry) => entry.mealEntryInput),
     };
     try {
       if (mode === "add") {
@@ -124,13 +137,13 @@ export default function MealEditor({ mode, mealId, initialEntries = [], initialD
       <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <section>
           <div className="flex items-end justify-between gap-4">
-            <div><h2 className="section-heading">Meal ledger</h2><p className="text-sm text-muted-foreground">{draftEntries.length} {draftEntries.length === 1 ? "food" : "foods"} in this meal</p></div>
+            <div><h2 className="section-heading">Meal ledger</h2><p className="text-sm text-muted-foreground">{entries.length} {entries.length === 1 ? "food" : "foods"} in this meal</p></div>
             <Button variant="outline" onClick={() => setFoodDialogOpen(true)}><Plus /> Add food</Button>
           </div>
-          <div className="mt-4">{draftEntries.map((entry) => <MealDraftRow key={draftKey(entry)} entry={entry} onRemove={() => removeEntry(entry)} />)}</div>
-          {draftEntries.length === 0 && <button type="button" onClick={() => setFoodDialogOpen(true)} className="mt-5 min-h-44 w-full rounded-xl border-2 border-dashed p-8 text-center text-muted-foreground hover:border-primary hover:text-foreground">Add the first food to this meal</button>}
+          <div className="mt-4">{entries.map((entry, index) => <MealDraftRow key={`${entry.foodImportData.food.externalSource}:${entry.foodImportData.food.externalId}:${index}`} entry={entry} onRemove={() => removeEntry(index)} onAmountChange={(amount) => updateAmount(index, amount)} />)}</div>
+          {entries.length === 0 && <button type="button" onClick={() => setFoodDialogOpen(true)} className="mt-5 min-h-44 w-full rounded-xl border-2 border-dashed p-8 text-center text-muted-foreground hover:border-primary hover:text-foreground">Add the first food to this meal</button>}
         </section>
-        <MealNutritionSummary entries={draftEntries} energyUnit={energyUnit} label={mode === "add" ? "This meal — not saved yet" : "Updated meal preview"} />
+        <MealNutritionSummary entries={entries} energyUnit={energyUnit} label={mode === "add" ? "This meal — not saved yet" : "Updated meal preview"} />
       </div>
       {mode === "update" && <p className="mt-6 text-sm text-muted-foreground">Saving replaces this meal with the foods and time shown here.</p>}
       {error && <p className="mt-5 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive" role="alert">{error}</p>}

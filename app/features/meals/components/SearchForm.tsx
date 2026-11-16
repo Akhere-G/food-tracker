@@ -15,10 +15,11 @@ export default function SearchForm({
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<FoodSearchItem[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [composing, setComposing] = useState(false);
   const requestId = useRef(0);
 
   useEffect(() => {
-    if (search.trim().length < 2) {
+    if (composing || search.trim().length < 2) {
       return;
     }
     const currentRequest = ++requestId.current;
@@ -38,7 +39,7 @@ export default function SearchForm({
     const timeout = setTimeout(getSearchResults, 300);
 
     return () => clearTimeout(timeout);
-  }, [search]);
+  }, [composing, search]);
 
   function updateSearch(value: string) {
     setSearch(value);
@@ -55,7 +56,7 @@ export default function SearchForm({
       <label htmlFor="food-search" className="text-sm font-medium">Search for a food</label>
       <div className="relative mt-2">
         <Search className="pointer-events-none absolute left-3 top-3 size-4 text-muted-foreground" />
-        <Input id="food-search" className="px-9" autoComplete="off" placeholder="Try chicken soup" onChange={(e) => updateSearch(e.target.value)} value={search} />
+        <Input id="food-search" className="px-9" autoComplete="off" placeholder="Try chicken soup" onCompositionStart={() => setComposing(true)} onCompositionEnd={(event) => { setComposing(false); updateSearch(event.currentTarget.value); }} onChange={(e) => updateSearch(e.target.value)} value={search} />
         {search && <button type="button" className="absolute right-2 top-2 rounded p-1 hover:bg-muted" onClick={() => updateSearch("")} aria-label="Clear search"><X className="size-4" /></button>}
       </div>
       {isLoading && <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground"><LoaderCircle className="size-4 animate-spin" /> Searching…</p>}
