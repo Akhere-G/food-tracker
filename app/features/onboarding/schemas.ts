@@ -5,6 +5,7 @@ import {
   CHALLENGES,
   GOALS,
   JOURNEY_FEELINGS,
+  NUTRITION_PRIORITIES,
   SEX_OPTIONS,
 } from "./constants";
 
@@ -21,6 +22,11 @@ export const onboardingInputSchema = z
     journeyFeeling: z.enum(JOURNEY_FEELINGS),
     biggestChallenge: z.enum(CHALLENGES),
     previousAttempts: z.array(z.string().trim().min(1).max(80)).max(8),
+    nutritionPriorities: z
+      .array(z.enum(NUTRITION_PRIORITIES))
+      .min(1)
+      .max(3)
+      .default(["balanced"]),
     requestedWeeklyChangeKg: z.number().min(0).max(2),
     timezone: z.string().trim().min(1).max(100),
   })

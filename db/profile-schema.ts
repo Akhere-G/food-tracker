@@ -41,6 +41,10 @@ export const nutritionProfile = pgTable(
       .$type<string[]>()
       .notNull()
       .default([]),
+    nutritionPriorities: jsonb("nutrition_priorities")
+      .$type<string[]>()
+      .notNull()
+      .default(["balanced"]),
     requestedWeeklyChangeKg: numeric("requested_weekly_change_kg", {
       precision: 4,
       scale: 2,

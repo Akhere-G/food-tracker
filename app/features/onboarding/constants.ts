@@ -35,3 +35,11 @@ export const CHALLENGES = [
   "uncertainty",
   "other",
 ] as const;
+
+export const NUTRITION_PRIORITIES = [
+  "balanced",
+  "reduce_sodium",
+  "more_fibre",
+  "support_bones",
+  "support_energy",
+] as const;

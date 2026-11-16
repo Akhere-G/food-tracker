@@ -16,6 +16,7 @@ export function createOnboardingDraft(): OnboardingInput {
     journeyFeeling: "one_day_at_a_time",
     biggestChallenge: "momentum",
     previousAttempts: [],
+    nutritionPriorities: ["balanced"],
     requestedWeeklyChangeKg: 0.5,
     timezone: "Europe/London",
   };

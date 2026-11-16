@@ -6,6 +6,7 @@ import {
   ACTIVITY_LEVELS,
   CHALLENGES,
   JOURNEY_FEELINGS,
+  NUTRITION_PRIORITIES,
   SEX_OPTIONS,
   WEEKLY_CHANGE_OPTIONS,
 } from "../constants";
@@ -36,6 +37,11 @@ const labels: Record<string, string> = {
   strict_plans: "Plans have felt too strict",
   uncertainty: "I am not sure what works for me",
   other: "Something else",
+  balanced: "Keep the whole picture balanced",
+  reduce_sodium: "Keep sodium in check",
+  more_fibre: "Get more fibre",
+  support_bones: "Support bone health",
+  support_energy: "Support everyday energy",
 };
 
 export function BodyFields({ value, onChange }: Props) {
@@ -119,6 +125,47 @@ export function JourneyFields({ value, onChange }: Props) {
         </Field>
       </div>
     </div>
+  );
+}
+
+export function NutritionPriorityFields({ value, onChange }: Props) {
+  function togglePriority(priority: OnboardingInput["nutritionPriorities"][number]) {
+    if (priority === "balanced") {
+      onChange({ nutritionPriorities: ["balanced"] });
+      return;
+    }
+
+    const current = value.nutritionPriorities.filter(
+      (item) => item !== "balanced",
+    );
+    const selected = current.includes(priority);
+    const next = selected
+      ? current.filter((item) => item !== priority)
+      : [...current, priority].slice(0, 3);
+    onChange({ nutritionPriorities: next.length ? next : ["balanced"] });
+  }
+
+  return (
+    <fieldset>
+      <legend className="font-heading text-2xl font-semibold">
+        What would you like us to gently prioritise?
+      </legend>
+      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+        Choose up to three. We use these to emphasise useful guidance, not to
+        grade your meals.
+      </p>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        {NUTRITION_PRIORITIES.map((priority) => (
+          <Choice
+            key={priority}
+            selected={value.nutritionPriorities.includes(priority)}
+            onClick={() => togglePriority(priority)}
+          >
+            {labels[priority]}
+          </Choice>
+        ))}
+      </div>
+    </fieldset>
   );
 }
 

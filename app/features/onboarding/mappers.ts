@@ -16,6 +16,7 @@ export function profileToOnboardingInput(
     journeyFeeling: profile.journeyFeeling as OnboardingInput["journeyFeeling"],
     biggestChallenge: profile.biggestChallenge as OnboardingInput["biggestChallenge"],
     previousAttempts: profile.previousAttempts,
+    nutritionPriorities: profile.nutritionPriorities as OnboardingInput["nutritionPriorities"],
     requestedWeeklyChangeKg: Number(profile.requestedWeeklyChangeKg),
     timezone: profile.timezone,
   };

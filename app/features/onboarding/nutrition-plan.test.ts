@@ -46,4 +46,17 @@ describe("nutrition plan", () => {
     };
     expect(onboardingInputSchema.safeParse(input).success).toBe(false);
   });
+
+  it("keeps existing browser drafts compatible with nutrition priorities", () => {
+    const existingDraft = {
+      ...createOnboardingDraft(),
+      nutritionPriorities: undefined,
+    };
+    const result = onboardingInputSchema.safeParse(existingDraft);
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.nutritionPriorities).toEqual(["balanced"]);
+    }
+  });
 });

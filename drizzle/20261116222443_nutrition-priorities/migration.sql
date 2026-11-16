@@ -1,0 +1,1 @@
+ALTER TABLE "nutrition_profile" ADD COLUMN "nutrition_priorities" jsonb DEFAULT '["balanced"]' NOT NULL;

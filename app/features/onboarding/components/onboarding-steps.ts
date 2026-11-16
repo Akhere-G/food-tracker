@@ -18,6 +18,11 @@ export const onboardingSteps = [
       "There is no wrong answer and these answers never score your progress.",
   },
   {
+    title: "Choose what deserves a little more attention",
+    description:
+      "We will personalise the emphasis while keeping your nutrition view balanced.",
+  },
+  {
     title: "Your plan is ready",
     description: "Review the estimate before saving it.",
   },

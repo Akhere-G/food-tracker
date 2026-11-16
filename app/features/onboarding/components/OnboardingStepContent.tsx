@@ -1,6 +1,11 @@
 import { Soup } from "lucide-react";
 import type { OnboardingInput } from "../schemas";
-import { BodyFields, GoalFields, JourneyFields } from "./OnboardingFields";
+import {
+  BodyFields,
+  GoalFields,
+  JourneyFields,
+  NutritionPriorityFields,
+} from "./OnboardingFields";
 import PlanSummary from "./PlanSummary";
 
 type OnboardingStepContentProps = {
@@ -23,6 +28,8 @@ export default function OnboardingStepContent({
       return <GoalFields value={value} onChange={onChange} />;
     case 3:
       return <JourneyFields value={value} onChange={onChange} />;
+    case 4:
+      return <NutritionPriorityFields value={value} onChange={onChange} />;
     default:
       return <PlanSummary value={value} />;
   }

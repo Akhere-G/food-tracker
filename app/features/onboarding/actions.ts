@@ -20,6 +20,7 @@ export async function saveOnboarding(input: OnboardingInput) {
     );
     revalidatePath("/dashboard");
     revalidatePath("/settings");
+    revalidatePath("/nutrition");
     return profile;
   }, "We could not save your nutrition plan.");
 }

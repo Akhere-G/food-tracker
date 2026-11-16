@@ -2,6 +2,14 @@ import { formatDate } from "date-fns";
 import type { OnboardingInput } from "../schemas";
 import { calculateNutritionPlan } from "../nutrition-plan";
 
+const priorityLabels = {
+  balanced: "Balanced overview",
+  reduce_sodium: "Sodium",
+  more_fibre: "Fibre",
+  support_bones: "Bone health",
+  support_energy: "Everyday energy",
+} as const;
+
 export default function PlanSummary({ value }: { value: OnboardingInput }) {
   const plan = calculateNutritionPlan(value);
   const targetDate = plan.targetDate
@@ -26,6 +34,12 @@ export default function PlanSummary({ value }: { value: OnboardingInput }) {
           <SummaryTerm label="Carbohydrate" value={`${plan.dailyCarbohydrateGrams} g`} />
           <SummaryTerm label="Fat" value={`${plan.dailyFatGrams} g`} />
           <SummaryTerm label="Planned weekly pace" value={`${plan.plannedWeeklyChangeKg} kg`} />
+          <SummaryTerm
+            label="Nutrition focus"
+            value={value.nutritionPriorities
+              .map((priority) => priorityLabels[priority])
+              .join(", ")}
+          />
         </dl>
       </div>
       <aside className="rounded-xl bg-accent p-6 text-accent-foreground">
