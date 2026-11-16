@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Meal } from "@/db/food-schema";
 import { Calendar, ChevronLeft, ChevronRight, Dot, Menu } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import {
   addDays,
   formatDate,
@@ -16,7 +16,18 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { calculateNutrients } from "../utils";
 import NutrientTotal from "./NutrientTotal";
-export default function MealsHeader({ meals }: { meals: Meal[] }) {
+import { ActionResult } from "@/lib/action";
+import ErrorComponent from "@/components/layout/Error";
+export default function MealsHeader({
+  mealsPromise,
+}: {
+  mealsPromise: Promise<ActionResult<Meal[]>>;
+}) {
+  const mealsResult = use(mealsPromise);
+
+  const errorMessage = !mealsResult.success ? mealsResult.error : "";
+  const meals = mealsResult.success ? mealsResult.data : [];
+
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -51,6 +62,10 @@ export default function MealsHeader({ meals }: { meals: Meal[] }) {
     dateTitle = "Yesterday";
   } else if (isTomorrow(currentDate)) {
     dateTitle = "Tomorrow";
+  }
+
+  if (errorMessage) {
+    return <ErrorComponent message={errorMessage} />;
   }
   return (
     <div className="max-w-7xl mx-auto">

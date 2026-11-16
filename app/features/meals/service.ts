@@ -17,6 +17,16 @@ type ResolvedEntry = {
   grams: number;
 };
 
+export async function getMeals({
+  startDate,
+  endDate,
+}: {
+  startDate: Date;
+  endDate: Date;
+}) {
+  const userId = await requireUserId();
+  return repo.getMeals({ userId, startDate, endDate });
+}
 export async function saveMeal(request: SaveMealRequest) {
   const userId = await requireUserId();
   const details = await loadFoodDetails(request.mealEntries);
@@ -34,12 +44,13 @@ export async function saveMeal(request: SaveMealRequest) {
 
 // Never trust client data: nutrition and servings come from the provider.
 async function loadFoodDetails(entries: MealEntryInput[]) {
-  return await foodService.getFoodDetailsList(
+  const a = await foodService.getFoodDetailsList(
     entries.map((e) => ({
       source: e.food.externalSource,
       externalId: e.food.externalId,
     })),
   );
+  return a;
 }
 
 // Works out the amount in grams, checking the chosen serving really exists.

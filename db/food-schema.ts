@@ -256,11 +256,11 @@ export type NewMeal = typeof meal.$inferInsert;
 
 export type MealEntry = typeof mealEntry.$inferSelect & {
   serving: Serving | null;
-  food: Food;
+  food: Food | null;
 };
 export type NewMealEntry = typeof mealEntry.$inferInsert;
 
-export type NewMealEntryWithFo0d = typeof mealEntry.$inferInsert & {
+export type NewMealEntryWithFood = typeof mealEntry.$inferInsert & {
   serving: Serving | null;
   food: Food;
 };

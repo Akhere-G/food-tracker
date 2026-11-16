@@ -1,19 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { NewMealEntryWithFood } from "@/db/food-schema";
+import { MealEntry, NewMealEntryWithFood } from "@/db/food-schema";
 import { Dot, Pencil } from "lucide-react";
 import { MacroShortSymbol } from "../../food/nutrients";
 
-export default function MealEntryCard({
-  mealEntry,
-}: {
-  mealEntry: NewMealEntryWithFood;
-}) {
+export default function MealEntryCard({ mealEntry }: { mealEntry: MealEntry }) {
   return (
     <div className="p-4 flex flex-col gap-2 bg-card" key={mealEntry.id}>
       <div>
         <div className="flex justify-between items-center mb-2">
           <div className="flex text-sm">
-            <p>{mealEntry.food.name}</p>
+            <p>{mealEntry.food!.name}</p>
             <Dot />
             <div className="flex items-center">
               {!!mealEntry.serving && (
@@ -30,7 +26,7 @@ export default function MealEntryCard({
           </Button>
         </div>
         <div className="flex flex-wrap text-xs gap-2">
-          {mealEntry.food.nutrients.map((nutrient) => {
+          {mealEntry.food!.nutrients.map((nutrient) => {
             const symbol = MacroShortSymbol[nutrient.nutrient.name];
             if (!symbol) {
               return null;

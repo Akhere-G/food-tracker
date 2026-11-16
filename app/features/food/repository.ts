@@ -19,6 +19,7 @@ export async function getNutrientIds(
   const ids = new Map(rows.map((r) => [r.name, r.id]));
 
   const missing = names.filter((n) => !ids.has(n));
+
   if (missing.length > 0) {
     console.error(
       `Nutrients missing from db (run db:seed): ${missing.join(", ")}`,

@@ -4,7 +4,9 @@ import { externalFoodRef } from "../food/schemas";
 export const mealEntryInput = z
   .object({
     food: externalFoodRef,
-    serving: z.object({ externalId: z.string().min(1) }).nullable(),
+    serving: z
+      .object({ externalId: z.string().min(1), label: z.string().min(1) })
+      .nullable(),
     servingQuantity: z.number().positive().nullable(),
     amountInGrams: z.number().positive().nullable(),
   })

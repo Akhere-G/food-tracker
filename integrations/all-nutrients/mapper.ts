@@ -4,26 +4,27 @@ import { FoodImportData } from "@/app/features/food/schemas";
 import { NUTRIENTS, NutrientKey } from "@/app/features/food/nutrients";
 
 const NUTRIENT_IDS: Record<Exclude<NutrientKey, "unsaturatedFat">, number[]> = {
-  calories: [1008], // 1062 is the same energy in kJ
-  protein: [1003],
-  totalFat: [1004],
-  saturatedFat: [1258],
-  monounsaturatedFat: [1292],
-  polyunsaturatedFat: [1293],
-  transFat: [1257],
-  totalCarbs: [1005, 1050], // by difference, then by summation
-  fibre: [1079],
-  totalSugars: [2000, 1063],
-  addedSugar: [1235],
-  iron: [1089],
-  calcium: [1087],
-  sodium: [1093],
-  magnesium: [1090],
-  potassium: [1092],
-  vitaminA: [1106], // RAE; 1104 is IU
-  vitaminC: [1162],
-  vitaminD: [1114], // µg; 1110 is IU
-  vitaminB12: [1178], // 1246 is "added"
+  Calories: [1008], // 1062 is the same energy in kJ
+  Protein: [1003],
+  "Total fat": [1004],
+  "Saturated fat": [1258],
+  "Unsaturated fat": [1258],
+  "Monounsaturated fat": [1292],
+  "Polyunsaturated fat": [1293],
+  "Trans fat": [1257],
+  "Total carbohydrates": [1005, 1050], // by difference, then by summation
+  Fibre: [1079],
+  "Total sugars": [2000, 1063],
+  "Added sugar": [1235],
+  Iron: [1089],
+  Calcium: [1087],
+  Sodium: [1093],
+  Magnesium: [1090],
+  Potassium: [1092],
+  "Vitamin A": [1106], // RAE; 1104 is IU
+  "Vitamin C": [1162],
+  "Vitamin D": [1114], // µg; 1110 is IU
+  "Vitamin B12": [1178], // 1246 is "added"
 };
 
 function mapNutrients(data: FoodDetailResponse): FoodImportData["nutrients"] {
@@ -42,10 +43,10 @@ function mapNutrients(data: FoodDetailResponse): FoodImportData["nutrients"] {
     }
   }
 
-  const mono = amounts.get("monounsaturatedFat");
-  const poly = amounts.get("polyunsaturatedFat");
+  const mono = amounts.get("Monounsaturated fat");
+  const poly = amounts.get("Polyunsaturated fat");
   if (mono !== undefined || poly !== undefined) {
-    amounts.set("unsaturatedFat", (mono ?? 0) + (poly ?? 0));
+    amounts.set("Unsaturated fat", (mono ?? 0) + (poly ?? 0));
   }
 
   return [...amounts].map(([key, amountPer100g]) => ({

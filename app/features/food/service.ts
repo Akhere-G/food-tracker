@@ -7,6 +7,7 @@ import { AppError } from "@/lib/errors";
 import { FoodApiProviderFactory } from "./providers";
 import * as repo from "./repository";
 import { FoodImportData } from "./schemas";
+import { FoodSearchItem } from "@/integrations/all-nutrients/schema";
 
 const DEFAULT_SOURCE: ExternalApiTypes = externalApiTypes.allthenutrients;
 
@@ -21,7 +22,7 @@ export function foodKey(source: string, externalId: string) {
   return `${source}:${externalId}`;
 }
 
-export async function searchFoods(query: string) {
+export async function searchFoods(query: string): Promise<FoodSearchItem[]> {
   await requireUserId();
   return await providerFor(DEFAULT_SOURCE).searchFoods(query);
 }

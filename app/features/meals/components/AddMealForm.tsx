@@ -5,19 +5,25 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import MealForm from "./MealForm";
+import { MealEntryData } from "../types";
 
 interface AddMealFormProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
+  addEntry: (entry: MealEntryData) => void;
 }
-export default function AddMealForm({ isOpen, setIsOpen }: AddMealFormProps) {
+export default function AddMealForm({
+  isOpen,
+  setIsOpen,
+  addEntry,
+}: AddMealFormProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add Meal</DialogTitle>
+          <DialogTitle className="text-xl">Add Meal</DialogTitle>
         </DialogHeader>
-        <MealForm />
+        <MealForm sumbitAction={addEntry} closeForm={() => setIsOpen(false)} />
       </DialogContent>
     </Dialog>
   );

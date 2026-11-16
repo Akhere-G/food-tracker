@@ -6,8 +6,20 @@ import MealmealEntryCard from "./MealEntryCard";
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatDate, isValid } from "date-fns";
+import { ActionResult } from "@/lib/action";
+import { use } from "react";
+import ErrorComponent from "@/components/layout/Error";
 
-export default function MealsList({ meals }: { meals: Meal[] }) {
+export default function MealsList({
+  mealsPromise,
+}: {
+  mealsPromise: Promise<ActionResult<Meal[]>>;
+}) {
+  const mealsResult = use(mealsPromise);
+
+  const errorMessage = !mealsResult.success ? mealsResult.error : "";
+  const meals = mealsResult.success ? mealsResult.data : [];
+
   const hours: Record<number, Meal[]> = {};
 
   const searchParams = useSearchParams();
@@ -27,6 +39,11 @@ export default function MealsList({ meals }: { meals: Meal[] }) {
   const groupedMeals = Object.entries(hours);
 
   const router = useRouter();
+
+  if (errorMessage) {
+    return <ErrorComponent message={errorMessage} />;
+  }
+
   return (
     <div className="flex flex-col gap-4 px-2">
       {groupedMeals.map(([hour, meals]) => {
