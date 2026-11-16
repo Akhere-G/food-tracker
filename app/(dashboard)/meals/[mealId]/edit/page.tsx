@@ -1,7 +1,7 @@
 import { TZDate } from "@date-fns/tz";
 import { format } from "date-fns";
 import { notFound } from "next/navigation";
-import MealEditor from "@/app/features/meals/components/MealEditor";
+import UpdateMealForm from "@/app/features/meals/components/UpdateMealForm";
 import { mealEntryToDraft } from "@/app/features/meals/mappers";
 import { getMeal } from "@/app/features/meals/service";
 import { getOnboardingProfile, getPreferences } from "@/app/features/onboarding/service";
@@ -23,8 +23,7 @@ export default async function EditMealPage({
 
   const eatenAt = new TZDate(meal.eatenAt, profile.timezone);
   return (
-    <MealEditor
-      mode="update"
+    <UpdateMealForm
       mealId={meal.id}
       initialDate={format(eatenAt, "yyyy-MM-dd")}
       initialTime={format(eatenAt, "HH:mm")}

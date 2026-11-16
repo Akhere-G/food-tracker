@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { TZDate } from "@date-fns/tz";
-import MealEditor from "@/app/features/meals/components/MealEditor";
+import AddMealForm from "@/app/features/meals/components/AddMealForm";
 import { getOnboardingProfile, getPreferences } from "@/app/features/onboarding/service";
 import { requireUserId } from "@/lib/auth-session";
 
@@ -24,8 +24,7 @@ export default async function AddMealPage({
     : format(now, "HH:mm");
 
   return (
-    <MealEditor
-      mode="add"
+    <AddMealForm
       initialDate={initialDate}
       initialTime={initialTime}
       energyUnit={preferences?.energyUnit === "kj" ? "kj" : "kcal"}
