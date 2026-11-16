@@ -26,3 +26,9 @@ export const saveMealRequest = z.object({
 });
 
 export type SaveMealRequest = z.infer<typeof saveMealRequest>;
+
+export const replaceMealRequest = saveMealRequest.extend({
+  eatenAt: z.iso.datetime(),
+});
+
+export type ReplaceMealRequest = z.infer<typeof replaceMealRequest>;

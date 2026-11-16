@@ -13,6 +13,13 @@ export async function saveMeal(request: SaveMealRequest) {
   );
 }
 
+export async function getMeal(mealId: string) {
+  return runAction(
+    async () => mealService.getMeal(mealId),
+    "Sorry, we could not load that meal.",
+  );
+}
+
 export async function getMeals({
   startDate,
   endDate,

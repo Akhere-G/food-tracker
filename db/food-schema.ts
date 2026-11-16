@@ -244,7 +244,7 @@ export type Nutrient = typeof nutrient.$inferSelect;
 export type NewNutrient = typeof nutrient.$inferInsert;
 
 export type FoodNutrient = typeof foodNutrient.$inferSelect & {
-  nutrient: Nutrient;
+  nutrient: Nutrient | null;
 };
 export type NewFoodNutrient = typeof foodNutrient.$inferInsert;
 

@@ -1,4 +1,4 @@
-import { BicepsFlexed, Flame, LucideIcon } from "lucide-react";
+import { Flame } from "lucide-react";
 
 export const MACROS = {
   Calories: { name: "Calories", unit: "kcal", dailyMax: 2500 },
@@ -9,7 +9,6 @@ export const MACROS = {
     unit: "g",
     dailyMax: 260,
   },
-  "Total sugars": { name: "Total sugars", unit: "g", dailyMax: 90 },
 } as const;
 
 export const MacroShortSymbol: Record<string, string | React.ReactNode> = {
@@ -38,6 +37,7 @@ export const SUBMACROS = {
   }, // derived: mono + poly
   "Trans fat": { name: "Trans fat", unit: "g", dailyMax: 2 },
   Fibre: { name: "Fibre", unit: "g", dailyMax: 30 },
+  "Total sugars": { name: "Total sugars", unit: "g", dailyMax: 90 },
   "Added sugar": { name: "Added sugar", unit: "g", dailyMax: 30 },
 } as const;
 

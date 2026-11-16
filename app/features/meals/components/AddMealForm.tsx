@@ -21,7 +21,7 @@ export default function AddMealForm({
     <Dialog open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-xl">Add Meal</DialogTitle>
+          <DialogTitle className="text-xl">Add food</DialogTitle>
         </DialogHeader>
         <MealForm sumbitAction={addEntry} closeForm={() => setIsOpen(false)} />
       </DialogContent>

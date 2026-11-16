@@ -11,23 +11,55 @@ export function calculateNutrients(
     { name: string; unit: string; amount: number; dailyMax: number }
   > = {};
 
+  for (const key of includedNutrients) {
+    const definition = NUTRIENTS[key as keyof typeof NUTRIENTS];
+    if (!definition) continue;
+    nutrients[key] = {
+      name: key,
+      unit: definition.unit,
+      amount: 0,
+      dailyMax: definition.dailyMax,
+    };
+  }
+
   for (const entry of mealEntries) {
+    if (!entry.food) continue;
     for (const nutrient of entry.food.nutrients) {
+      if (!nutrient.nutrient) continue;
       const amount =
         (Number(entry.amountInGrams) * Number(nutrient.amountPer100g)) / 100;
       const key = nutrient.nutrient.name;
       if (!includedNutrients.has(key)) continue;
-      if (!nutrients[key]) {
-        nutrients[key] = {
-          name: key,
-          unit: nutrient.nutrient.unit,
-          amount: 0,
-          dailyMax: NUTRIENTS[key as keyof typeof NUTRIENTS]?.dailyMax ?? 0,
-        };
-      }
+      if (!nutrients[key]) continue;
       nutrients[key].amount += amount;
     }
   }
 
   return nutrients;
+}
+
+export function calculateDraftNutrients(
+  entries: import("./types").MealEntryData[],
+) {
+  const totals = Object.fromEntries(
+    Object.values(MACROS).map((macro) => [
+      macro.name,
+      { ...macro, amount: 0 },
+    ]),
+  ) as Record<
+    string,
+    { name: string; unit: string; amount: number; dailyMax: number }
+  >;
+
+  for (const entry of entries) {
+    for (const nutrient of entry.foodImportData.nutrients) {
+      const name = nutrient.nutrient.name;
+      if (!totals[name]) continue;
+      totals[name].amount +=
+        (Number(entry.mealEntryInput.amountInGrams) *
+          Number(nutrient.amountPer100g)) /
+        100;
+    }
+  }
+  return totals;
 }
