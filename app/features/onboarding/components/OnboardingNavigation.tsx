@@ -5,6 +5,7 @@ type OnboardingNavigationProps = {
   step: number;
   stepCount: number;
   authenticated: boolean;
+  ready: boolean;
   pending: boolean;
   backAction: () => void;
   continueAction: () => void;
@@ -15,6 +16,7 @@ export default function OnboardingNavigation({
   step,
   stepCount,
   authenticated,
+  ready,
   pending,
   backAction,
   continueAction,
@@ -32,17 +34,17 @@ export default function OnboardingNavigation({
       <Button
         variant="outline"
         size="lg"
-        disabled={step === 0 || pending}
+        disabled={!ready || step === 0 || pending}
         onClick={backAction}
       >
         <ArrowLeft /> Back
       </Button>
       {finalStep ? (
-        <Button size="lg" disabled={pending} onClick={finishAction}>
+        <Button size="lg" disabled={!ready || pending} onClick={finishAction}>
           {finishLabel}
         </Button>
       ) : (
-        <Button size="lg" onClick={continueAction}>
+        <Button size="lg" disabled={!ready} onClick={continueAction}>
           Continue <ArrowRight />
         </Button>
       )}

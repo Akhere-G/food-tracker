@@ -31,7 +31,7 @@ export const registerSchema = z
       .min(1, "Password required")
       .max(255, "Password must be less than 256 characters")
       .superRefine((val, ctx) => {
-        if (!/d+/.test(val)) {
+        if (!/\d+/.test(val)) {
           ctx.addIssue("Password must contain a number.");
         }
 

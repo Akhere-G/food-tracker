@@ -32,30 +32,33 @@ export default function OnboardingWizard({
   );
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
+  const [ready, setReady] = useState(false);
   const router = useRouter();
   const stepCopy = onboardingSteps[step];
 
   useEffect(() => {
-    if (initialValue) return;
-
     const timeout = window.setTimeout(() => {
-      const stored = window.localStorage.getItem(ONBOARDING_STORAGE_KEY);
-      const parsed = parseOnboardingDraft(stored);
+      if (!initialValue) {
+        const stored = window.localStorage.getItem(ONBOARDING_STORAGE_KEY);
+        const parsed = parseOnboardingDraft(stored);
 
-      setValue((current) => ({
-        ...(parsed ?? current),
-        timezone:
-          Intl.DateTimeFormat().resolvedOptions().timeZone || current.timezone,
-      }));
+        setValue((current) => ({
+          ...(parsed ?? current),
+          timezone:
+            Intl.DateTimeFormat().resolvedOptions().timeZone ||
+            current.timezone,
+        }));
+      }
+      setReady(true);
     });
 
     return () => window.clearTimeout(timeout);
   }, [initialValue]);
 
   useEffect(() => {
-    if (initialValue) return;
+    if (initialValue || !ready) return;
     window.localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(value));
-  }, [initialValue, value]);
+  }, [initialValue, ready, value]);
 
   function updateValue(patch: Partial<OnboardingInput>) {
     setValue((current) => ({ ...current, ...patch }));
@@ -129,6 +132,7 @@ export default function OnboardingWizard({
         step={step}
         stepCount={onboardingSteps.length}
         authenticated={authenticated}
+        ready={ready}
         pending={pending}
         backAction={() => moveToStep(step - 1)}
         continueAction={() => moveToStep(step + 1)}

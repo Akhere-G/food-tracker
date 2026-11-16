@@ -90,6 +90,7 @@ export default function RegisterForm() {
       />
       <div className="flex gap-2">
         <Checkbox
+          aria-label="Agree to the terms and conditions and privacy policy"
           checked={agreedToTerms}
           onClick={() => setAgreedToTerms((prev) => !prev)}
         />{" "}

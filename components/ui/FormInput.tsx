@@ -11,11 +11,22 @@ export default function FormInput({
   id,
   ...props
 }: FormInputProps) {
+  const generatedId = React.useId();
+  const inputId = id ?? generatedId;
+  const errorId = `${inputId}-error`;
+
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={id}>{label}</label>
-      <Input id={id} {...props} />
-      <p className="h-5 text-destructive">{errorMessage}</p>
+      <label htmlFor={inputId}>{label}</label>
+      <Input
+        id={inputId}
+        aria-describedby={errorMessage ? errorId : undefined}
+        aria-invalid={Boolean(errorMessage)}
+        {...props}
+      />
+      <p id={errorId} className="h-5 text-destructive">
+        {errorMessage}
+      </p>
     </div>
   );
 }
