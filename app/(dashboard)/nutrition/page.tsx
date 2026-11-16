@@ -47,7 +47,7 @@ export default async function NutritionPage({
             anchor={range.anchor}
           />
         </div>
-        <div className="order-1 lg:order-2">
+        <div className="order-1 lg:order-2 lg:sticky lg:top-8 lg:self-start">
           <NutrientDetail report={report} period={period} />
         </div>
       </div>
