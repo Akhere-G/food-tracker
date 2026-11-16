@@ -1,6 +1,8 @@
 import * as z from "zod";
 import { externalFoodRef } from "../food/schemas";
 
+const isoDateTime = z.iso.datetime({ offset: true });
+
 export const mealEntryInput = z
   .object({
     food: externalFoodRef,
@@ -21,14 +23,14 @@ export const mealEntryInput = z
 export type MealEntryInput = z.infer<typeof mealEntryInput>;
 
 export const saveMealRequest = z.object({
-  eatenAt: z.iso.datetime().optional(),
+  eatenAt: isoDateTime.optional(),
   mealEntries: z.array(mealEntryInput).min(1, "Add at least one food"),
 });
 
 export type SaveMealRequest = z.infer<typeof saveMealRequest>;
 
 export const replaceMealRequest = saveMealRequest.extend({
-  eatenAt: z.iso.datetime(),
+  eatenAt: isoDateTime,
 });
 
 export type ReplaceMealRequest = z.infer<typeof replaceMealRequest>;
