@@ -4,10 +4,19 @@ import { getSession } from "@/lib/auth-session";
 import { getOnboardingProfile } from "@/app/features/onboarding/service";
 import { profileToOnboardingInput } from "@/app/features/onboarding/mappers";
 
-export default async function OnboardingPage() {
+async function OnboardingContent() {
   const session = await getSession();
   const profile = session ? await getOnboardingProfile(session.user.id) : null;
 
+  return (
+    <OnboardingWizard
+      authenticated={Boolean(session)}
+      initialValue={profile ? profileToOnboardingInput(profile) : undefined}
+    />
+  );
+}
+
+export default function OnboardingPage() {
   return (
     <main className="min-h-dvh px-4 py-6 md:px-8">
       <header className="mx-auto mb-10 flex max-w-7xl items-center justify-between border-b pb-5">
@@ -16,10 +25,10 @@ export default async function OnboardingPage() {
           Your answers stay on this device until you create an account.
         </p>
       </header>
-      <OnboardingWizard
-        authenticated={Boolean(session)}
-        initialValue={profile ? profileToOnboardingInput(profile) : undefined}
-      />
+      <Suspense fallback={<div className="mx-auto max-w-5xl py-20 text-muted-foreground">Preparing your plan…</div>}>
+        <OnboardingContent />
+      </Suspense>
     </main>
   );
 }
+import { Suspense } from "react";

@@ -1,5 +1,6 @@
 import { calculateDraftNutrients } from "../utils";
 import type { MealEntryData } from "../types";
+import { energyValue, type EnergyUnit } from "@/app/features/settings/units";
 
 const orderedMacros = ["Calories", "Protein", "Total carbohydrates", "Total fat"];
 const labels: Record<string, string> = {
@@ -12,17 +13,19 @@ const labels: Record<string, string> = {
 export default function MealNutritionSummary({
   entries,
   label,
+  energyUnit = "kcal",
 }: {
   entries: MealEntryData[];
   label: string;
+  energyUnit?: EnergyUnit;
 }) {
   const totals = calculateDraftNutrients(entries);
   return (
     <aside className="rounded-xl bg-accent p-5 text-accent-foreground lg:sticky lg:top-8">
       <p className="text-sm font-semibold">{label}</p>
       <p className="data-number mt-4 text-5xl font-semibold">
-        {Math.round(totals.Calories.amount).toLocaleString("en-GB")}
-        <span className="ml-2 font-sans text-base font-normal">kcal</span>
+        {energyValue(totals.Calories.amount, energyUnit).toLocaleString("en-GB")}
+        <span className="ml-2 font-sans text-base font-normal">{energyUnit}</span>
       </p>
       <div className="mt-5 divide-y border-y">
         {orderedMacros.slice(1).map((name) => (

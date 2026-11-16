@@ -1,6 +1,12 @@
 import { format } from "date-fns";
 import type { NutritionProfile } from "@/db/profile-schema";
 import type { buildProgressSummary } from "../summary";
+import {
+  energyValue,
+  weightValue,
+  type EnergyUnit,
+  type WeightUnit,
+} from "@/app/features/settings/units";
 
 type Summary = ReturnType<typeof buildProgressSummary>;
 
@@ -14,9 +20,13 @@ const macroLabels = {
 export default function DashboardOverview({
   summary,
   profile,
+  energyUnit,
+  weightUnit,
 }: {
   summary: Summary;
   profile: NutritionProfile;
+  energyUnit: EnergyUnit;
+  weightUnit: WeightUnit;
 }) {
   const chartTarget =
     profile.dailyCalories * (summary.days.length / summary.chart.length);
@@ -36,8 +46,8 @@ export default function DashboardOverview({
   return (
     <>
       <section className="mt-8 grid border-y py-7 md:grid-cols-2 md:divide-x">
-        <Metric label="Daily average" value={summary.dailyAverage} target={profile.dailyCalories} />
-        <Metric label="Period total" value={summary.totalCalories} target={profile.dailyCalories * summary.days.length} />
+        <Metric label="Daily average" value={summary.dailyAverage} target={profile.dailyCalories} unit={energyUnit} />
+        <Metric label="Period total" value={summary.totalCalories} target={profile.dailyCalories * summary.days.length} unit={energyUnit} />
       </section>
       <div className="grid gap-8 border-b py-7 lg:grid-cols-[1fr_1.15fr] lg:divide-x">
         <section className="lg:pr-8">
@@ -60,10 +70,10 @@ export default function DashboardOverview({
         </section>
         <section className="lg:pl-8">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div><h2 className="section-heading">Weight direction</h2><p className="data-number mt-2 text-4xl font-semibold">{Number(profile.currentWeightKg)} kg</p><p className="text-sm text-muted-foreground">Goal {Number(profile.targetWeightKg)} kg</p></div>
+            <div><h2 className="section-heading">Weight direction</h2><p className="data-number mt-2 text-4xl font-semibold">{weightValue(Number(profile.currentWeightKg), weightUnit)} {weightUnit}</p><p className="text-sm text-muted-foreground">Goal {weightValue(Number(profile.targetWeightKg), weightUnit)} {weightUnit}</p></div>
             {targetDate && <p className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground">Estimated {targetDate}</p>}
           </div>
-          <div className="mt-10 flex items-center gap-3" aria-label={`From ${profile.currentWeightKg} kilograms to ${profile.targetWeightKg} kilograms`}>
+          <div className="mt-10 flex items-center gap-3" aria-label={`From ${weightValue(Number(profile.currentWeightKg), weightUnit)} ${weightUnit} to ${weightValue(Number(profile.targetWeightKg), weightUnit)} ${weightUnit}`}>
             <span className="size-4 rounded-full bg-primary" /><span className="h-0.5 flex-1 border-t-2 border-dashed border-primary" /><span className="size-4 rounded-full border-4 border-primary bg-background" />
           </div>
           <div className="mt-2 flex justify-between text-xs text-muted-foreground"><span>Today</span><span>Target</span></div>
@@ -77,6 +87,6 @@ export default function DashboardOverview({
   );
 }
 
-function Metric({ label, value, target }: { label: string; value: number; target: number }) {
-  return <div className="py-3 first:md:pr-10 last:md:pl-10"><p className="text-lg font-medium">{label}</p><p className="data-number mt-1 text-5xl font-semibold md:text-6xl">{value.toLocaleString("en-GB")} <span className="font-sans text-base font-normal">/ {target.toLocaleString("en-GB")} kcal</span></p><div className="mt-4 h-2 overflow-hidden rounded-full bg-muted"><span className="block h-full rounded-full bg-primary" style={{ width: `${Math.min(100, (value / Math.max(1, target)) * 100)}%` }} /></div></div>;
+function Metric({ label, value, target, unit }: { label: string; value: number; target: number; unit: EnergyUnit }) {
+  return <div className="py-3 first:md:pr-10 last:md:pl-10"><p className="text-lg font-medium">{label}</p><p className="data-number mt-1 text-5xl font-semibold md:text-6xl">{energyValue(value, unit).toLocaleString("en-GB")} <span className="font-sans text-base font-normal">/ {energyValue(target, unit).toLocaleString("en-GB")} {unit}</span></p><div className="mt-4 h-2 overflow-hidden rounded-full bg-muted"><span className="block h-full rounded-full bg-primary" style={{ width: `${Math.min(100, (value / Math.max(1, target)) * 100)}%` }} /></div></div>;
 }

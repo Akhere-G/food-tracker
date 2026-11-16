@@ -158,6 +158,34 @@
   --accent-foreground: oklch(0.31 0.08 325);
 }
 
+.dark[data-color-theme="ocean"] {
+  --primary: oklch(0.72 0.11 230);
+  --ring: oklch(0.68 0.10 230);
+  --accent: oklch(0.27 0.04 230);
+  --accent-foreground: oklch(0.94 0.02 230);
+}
+
+.dark[data-color-theme="forest"] {
+  --primary: oklch(0.70 0.11 145);
+  --ring: oklch(0.64 0.10 145);
+  --accent: oklch(0.27 0.04 145);
+  --accent-foreground: oklch(0.94 0.02 145);
+}
+
+.dark[data-color-theme="amber"] {
+  --primary: oklch(0.78 0.13 75);
+  --ring: oklch(0.72 0.12 75);
+  --accent: oklch(0.28 0.045 75);
+  --accent-foreground: oklch(0.95 0.025 75);
+}
+
+.dark[data-color-theme="plum"] {
+  --primary: oklch(0.72 0.12 325);
+  --ring: oklch(0.66 0.11 325);
+  --accent: oklch(0.28 0.045 325);
+  --accent-foreground: oklch(0.95 0.025 325);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -168,6 +196,7 @@
   html {
     @apply font-sans;
     scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    scrollbar-width: auto;
   }
 
   *::-webkit-scrollbar { width: 0.75rem; height: 0.75rem; }

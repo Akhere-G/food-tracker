@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import MealEditor from "@/app/features/meals/components/MealEditor";
 import { mealEntryToDraft } from "@/app/features/meals/mappers";
 import { getMeal } from "@/app/features/meals/service";
-import { getOnboardingProfile } from "@/app/features/onboarding/service";
+import { getOnboardingProfile, getPreferences } from "@/app/features/onboarding/service";
 import { requireUserId } from "@/lib/auth-session";
 
 export default async function EditMealPage({
@@ -14,9 +14,10 @@ export default async function EditMealPage({
 }) {
   const { mealId } = await params;
   const userId = await requireUserId();
-  const [meal, profile] = await Promise.all([
+  const [meal, profile, preferences] = await Promise.all([
     getMeal(mealId).catch(() => null),
     getOnboardingProfile(userId),
+    getPreferences(userId),
   ]);
   if (!meal || !profile) notFound();
 
@@ -27,6 +28,8 @@ export default async function EditMealPage({
       mealId={meal.id}
       initialDate={format(eatenAt, "yyyy-MM-dd")}
       initialTime={format(eatenAt, "HH:mm")}
+      energyUnit={preferences?.energyUnit === "kj" ? "kj" : "kcal"}
+      timezone={profile.timezone}
       initialEntries={meal.entries.flatMap((entry) => {
         const draft = mealEntryToDraft(entry);
         return draft ? [draft] : [];

@@ -8,7 +8,8 @@ import { useSearchParams } from "next/navigation";
 import type { Meal } from "@/db/food-schema";
 import type { ActionResult } from "@/lib/action";
 import ErrorComponent from "@/components/layout/Error";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import MealEntryCard from "./MealEntryCard";
 
 export default function MealsList({
@@ -28,12 +29,12 @@ export default function MealsList({
         <p className="mt-2 text-sm text-muted-foreground">
           Your nutrition totals stay visible above, ready for your first meal.
         </p>
-        <Button
-          className="mt-5"
-          render={<Link href={`/addmeal?date=${selectedDate}`} />}
+        <Link
+          className={cn(buttonVariants(), "mt-5")}
+          href={`/addmeal?date=${selectedDate}`}
         >
-          <Plus /> Add a meal
-        </Button>
+          <Plus className="size-4" /> Add a meal
+        </Link>
       </section>
     );
   }
@@ -42,9 +43,9 @@ export default function MealsList({
     <section className="mt-8 space-y-5" aria-labelledby="meal-ledger-heading">
       <div className="flex items-center justify-between gap-4">
         <h2 id="meal-ledger-heading" className="section-heading">Meal ledger</h2>
-        <Button render={<Link href={`/addmeal?date=${selectedDate}`} />}>
-          <Plus /> Add meal
-        </Button>
+        <Link className={buttonVariants()} href={`/addmeal?date=${selectedDate}`}>
+          <Plus className="size-4" /> Add meal
+        </Link>
       </div>
       {result.data
         .toSorted((a, b) => a.eatenAt.getTime() - b.eatenAt.getTime())
@@ -54,13 +55,12 @@ export default function MealsList({
               <p className="font-heading text-xl font-semibold">
                 {format(meal.eatenAt, "HH:mm")}
               </p>
-              <Button
-                size="sm"
-                variant="ghost"
-                render={<Link href={`/meals/${meal.id}/edit`} />}
+              <Link
+                href={`/meals/${meal.id}/edit`}
+                className={buttonVariants({ size: "sm", variant: "ghost" })}
               >
-                <Pencil /> Edit meal
-              </Button>
+                <Pencil className="size-4" /> Edit meal
+              </Link>
             </header>
             {meal.entries.map((entry) => (
               <MealEntryCard key={entry.id} mealEntry={entry} />

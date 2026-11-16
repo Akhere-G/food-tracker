@@ -18,6 +18,7 @@ import ErrorComponent from "@/components/layout/Error";
 import { Button } from "@/components/ui/button";
 import { calculateNutrients } from "../utils";
 import NutrientTotal from "./NutrientTotal";
+import { energyValue, type EnergyUnit } from "@/app/features/settings/units";
 
 type Goals = {
   Calories: number;
@@ -35,9 +36,11 @@ function selectedDate(value: string | null) {
 export default function MealsHeader({
   mealsPromise,
   goals,
+  energyUnit,
 }: {
   mealsPromise: Promise<ActionResult<Meal[]>>;
   goals: Goals;
+  energyUnit: EnergyUnit;
 }) {
   const result = use(mealsPromise);
   const router = useRouter();
@@ -50,6 +53,11 @@ export default function MealsHeader({
   if (!result.success) return <ErrorComponent message={result.error} />;
   const totals = calculateNutrients(result.data.flatMap((meal) => meal.entries));
   for (const [name, target] of Object.entries(goals)) totals[name].dailyMax = target;
+  if (energyUnit === "kj") {
+    totals.Calories.amount = energyValue(totals.Calories.amount, "kj");
+    totals.Calories.dailyMax = energyValue(totals.Calories.dailyMax, "kj");
+    totals.Calories.unit = "kj";
+  }
   const dateTitle = isToday(currentDate)
     ? "Today"
     : isYesterday(currentDate)

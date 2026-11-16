@@ -24,7 +24,7 @@ export default function PasswordForm() {
   }
 
   return (
-    <form className="border-t pt-6" onSubmit={submit}>
+    <form className="border-t pt-6" noValidate onSubmit={submit}>
       <h2 className="section-heading">Password</h2>
       <p className="mt-1 text-sm text-muted-foreground">Changing it signs out your other sessions.</p>
       <div className="mt-5 grid gap-4 sm:grid-cols-2">

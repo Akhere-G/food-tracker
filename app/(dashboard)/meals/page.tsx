@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { getMeals } from "@/app/features/meals/actions";
 import MealsHeader from "@/app/features/meals/components/MealsHeader";
 import MealsList from "@/app/features/meals/components/MealsList";
-import { getOnboardingProfile } from "@/app/features/onboarding/service";
+import { getOnboardingProfile, getPreferences } from "@/app/features/onboarding/service";
 import { dayRange } from "@/app/features/progress/period";
 import Loader from "@/components/layout/Loader";
 import { requireUserId } from "@/lib/auth-session";
@@ -14,7 +14,10 @@ export default async function MealsPage({
 }) {
   const { date } = await searchParams;
   const userId = await requireUserId();
-  const profile = await getOnboardingProfile(userId);
+  const [profile, preferences] = await Promise.all([
+    getOnboardingProfile(userId),
+    getPreferences(userId),
+  ]);
   if (!profile) return null;
   const range = dayRange(profile.timezone, date);
   const mealsPromise = getMeals({ startDate: range.start, endDate: range.end });
@@ -28,7 +31,11 @@ export default async function MealsPage({
   return (
     <Suspense fallback={<Loader />}>
       <div className="page-shell">
-        <MealsHeader mealsPromise={mealsPromise} goals={goals} />
+        <MealsHeader
+          mealsPromise={mealsPromise}
+          goals={goals}
+          energyUnit={preferences?.energyUnit === "kj" ? "kj" : "kcal"}
+        />
         <MealsList mealsPromise={mealsPromise} />
       </div>
     </Suspense>

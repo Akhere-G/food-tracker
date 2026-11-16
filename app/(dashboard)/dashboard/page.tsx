@@ -1,8 +1,9 @@
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { requireUserId } from "@/lib/auth-session";
-import { getOnboardingProfile } from "@/app/features/onboarding/service";
+import { getOnboardingProfile, getPreferences } from "@/app/features/onboarding/service";
 import { getMeals } from "@/app/features/meals/service";
 import DashboardOverview from "@/app/features/progress/components/DashboardOverview";
 import PeriodControls from "@/app/features/progress/components/PeriodControls";
@@ -19,7 +20,10 @@ export default async function DashboardPage({
 }) {
   const { period: periodValue, date } = await searchParams;
   const userId = await requireUserId();
-  const profile = await getOnboardingProfile(userId);
+  const [profile, preferences] = await Promise.all([
+    getOnboardingProfile(userId),
+    getPreferences(userId),
+  ]);
   if (!profile) return null;
 
   const period = parseProgressPeriod(periodValue);
@@ -40,14 +44,19 @@ export default async function DashboardPage({
           <p className="text-sm font-medium text-primary">Nutrition overview</p>
           <h1 className="title mt-1">Your {period}</h1>
         </div>
-        <Button size="lg" render={<Link href="/addmeal" />}>
-          <Plus /> Add meal
-        </Button>
+        <Link href="/addmeal" className={cn(buttonVariants({ size: "lg" }))}>
+          <Plus className="size-4" /> Add meal
+        </Link>
       </header>
       <div className="mt-6">
         <PeriodControls period={period} {...range} />
       </div>
-      <DashboardOverview summary={summary} profile={profile} />
+      <DashboardOverview
+        summary={summary}
+        profile={profile}
+        energyUnit={preferences?.energyUnit === "kj" ? "kj" : "kcal"}
+        weightUnit={preferences?.weightUnit === "lb" ? "lb" : "kg"}
+      />
     </div>
   );
 }

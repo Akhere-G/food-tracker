@@ -1,15 +1,25 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { TZDate } from "@date-fns/tz";
 import { useRouter } from "next/navigation";
 import { Plus, Save } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import AddMealForm from "./AddMealForm";
 import MealDraftRow from "./MealDraftRow";
 import MealNutritionSummary from "./MealNutritionSummary";
 import type { MealEntryData } from "../types";
 import { saveMeal } from "../actions";
+import type { EnergyUnit } from "@/app/features/settings/units";
 
 type Props = {
   mode: "add" | "update";
@@ -17,18 +27,21 @@ type Props = {
   initialEntries?: MealEntryData[];
   initialDate: string;
   initialTime: string;
+  energyUnit?: EnergyUnit;
+  timezone: string;
 };
 
 function draftKey(entry: MealEntryData) {
   return `${entry.foodImportData.food.externalSource}:${entry.foodImportData.food.externalId}`;
 }
 
-export default function MealEditor({ mode, mealId, initialEntries = [], initialDate, initialTime }: Props) {
+export default function MealEditor({ mode, mealId, initialEntries = [], initialDate, initialTime, energyUnit = "kcal", timezone }: Props) {
   const [entries, setEntries] = useState(() => new Map(initialEntries.map((entry) => [draftKey(entry), entry])));
   const [date, setDate] = useState(initialDate);
   const [time, setTime] = useState(initialTime);
   const [foodDialogOpen, setFoodDialogOpen] = useState(false);
   const [pending, setPending] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
   const draftEntries = useMemo(() => [...entries.values()], [entries]);
@@ -52,8 +65,10 @@ export default function MealEditor({ mode, mealId, initialEntries = [], initialD
     }
     setPending(true);
     setError("");
+    const [year, month, day] = date.split("-").map(Number);
+    const [hour, minute] = time.split(":").map(Number);
     const request = {
-      eatenAt: new Date(`${date}T${time}:00`).toISOString(),
+      eatenAt: new TZDate(year, month - 1, day, hour, minute, timezone).toISOString(),
       mealEntries: draftEntries.map((entry) => entry.mealEntryInput),
     };
     try {
@@ -91,6 +106,7 @@ export default function MealEditor({ mode, mealId, initialEntries = [], initialD
       return;
     }
     toast.success("Meal deleted");
+    setDeleteOpen(false);
     router.push(`/meals?date=${date}`);
     router.refresh();
   }
@@ -114,16 +130,27 @@ export default function MealEditor({ mode, mealId, initialEntries = [], initialD
           <div className="mt-4">{draftEntries.map((entry) => <MealDraftRow key={draftKey(entry)} entry={entry} onRemove={() => removeEntry(entry)} />)}</div>
           {draftEntries.length === 0 && <button type="button" onClick={() => setFoodDialogOpen(true)} className="mt-5 min-h-44 w-full rounded-xl border-2 border-dashed p-8 text-center text-muted-foreground hover:border-primary hover:text-foreground">Add the first food to this meal</button>}
         </section>
-        <MealNutritionSummary entries={draftEntries} label={mode === "add" ? "This meal — not saved yet" : "Updated meal preview"} />
+        <MealNutritionSummary entries={draftEntries} energyUnit={energyUnit} label={mode === "add" ? "This meal — not saved yet" : "Updated meal preview"} />
       </div>
       {mode === "update" && <p className="mt-6 text-sm text-muted-foreground">Saving replaces this meal with the foods and time shown here.</p>}
       {error && <p className="mt-5 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive" role="alert">{error}</p>}
       <div className="mt-8 flex flex-col gap-3 border-t pt-6 sm:flex-row">
         <Button size="lg" disabled={pending} onClick={submit}><Save /> {pending ? "Saving…" : mode === "add" ? "Save meal" : "Save changes"}</Button>
         <Button size="lg" variant="outline" disabled={pending} onClick={() => router.back()}>{mode === "add" ? "Cancel" : "Discard changes"}</Button>
-        {mode === "update" && <Button size="lg" variant="destructive" disabled={pending} onClick={removeMeal} className="sm:ml-auto">Delete meal</Button>}
+        {mode === "update" && <Button size="lg" variant="destructive" disabled={pending} onClick={() => setDeleteOpen(true)} className="sm:ml-auto">Delete meal</Button>}
       </div>
       <AddMealForm isOpen={foodDialogOpen} setIsOpen={setFoodDialogOpen} addEntry={addEntry} />
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete this meal?</DialogTitle>
+            <DialogDescription>This removes the complete meal and every food entry in it. This action cannot be undone.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter showCloseButton>
+            <Button variant="destructive" disabled={pending} onClick={removeMeal}>{pending ? "Deleting…" : "Delete meal"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

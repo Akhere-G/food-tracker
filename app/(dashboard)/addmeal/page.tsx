@@ -1,5 +1,8 @@
 import { format } from "date-fns";
+import { TZDate } from "@date-fns/tz";
 import MealEditor from "@/app/features/meals/components/MealEditor";
+import { getOnboardingProfile, getPreferences } from "@/app/features/onboarding/service";
+import { requireUserId } from "@/lib/auth-session";
 
 export default async function AddMealPage({
   searchParams,
@@ -7,7 +10,12 @@ export default async function AddMealPage({
   searchParams: Promise<{ date?: string; time?: string }>;
 }) {
   const params = await searchParams;
-  const now = new Date();
+  const userId = await requireUserId();
+  const [profile, preferences] = await Promise.all([
+    getOnboardingProfile(userId),
+    getPreferences(userId),
+  ]);
+  const now = profile ? TZDate.tz(profile.timezone) : new Date();
   const initialDate = /^\d{4}-\d{2}-\d{2}$/.test(params.date ?? "")
     ? params.date!
     : format(now, "yyyy-MM-dd");
@@ -20,6 +28,8 @@ export default async function AddMealPage({
       mode="add"
       initialDate={initialDate}
       initialTime={initialTime}
+      energyUnit={preferences?.energyUnit === "kj" ? "kj" : "kcal"}
+      timezone={profile?.timezone ?? "Europe/London"}
     />
   );
 }
