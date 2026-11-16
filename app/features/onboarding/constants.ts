@@ -9,8 +9,7 @@ export const ACTIVITY_LEVELS = [
 ] as const;
 
 export const WEEKLY_CHANGE_OPTIONS = [0.25, 0.5, 1, 1.5, 2] as const;
-export const NHS_RECOMMENDED_MAX_LOSS_KG = 1;
-export const NHS_RECOMMENDED_GAIN_CALORIES = 500;
+export const PACE_WARNING_THRESHOLD_KG = 1;
 
 export const ACTIVITY_MULTIPLIERS = {
   sedentary: 1.2,

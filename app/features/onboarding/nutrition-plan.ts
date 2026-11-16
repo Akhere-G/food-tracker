@@ -2,8 +2,7 @@ import { addDays, differenceInYears } from "date-fns";
 import type { OnboardingInput } from "./schemas";
 import {
   ACTIVITY_MULTIPLIERS,
-  NHS_RECOMMENDED_GAIN_CALORIES,
-  NHS_RECOMMENDED_MAX_LOSS_KG,
+  PACE_WARNING_THRESHOLD_KG,
 } from "./constants";
 
 const CALORIES_PER_KILOGRAM = 7700;
@@ -44,14 +43,10 @@ export function calculateNutritionPlan(
 
   const isLoss = input.goal === "lose";
   const isGain = input.goal === "gain";
-  const safeAdjustment = isLoss
-    ? Math.min(requestedDailyAdjustment, 1100)
-    : isGain
-      ? Math.min(requestedDailyAdjustment, NHS_RECOMMENDED_GAIN_CALORIES)
-      : 0;
+  const dailyAdjustment = isLoss || isGain ? requestedDailyAdjustment : 0;
   const calories = isLoss
-    ? maintenanceCalories - safeAdjustment
-    : maintenanceCalories + safeAdjustment;
+    ? maintenanceCalories - dailyAdjustment
+    : maintenanceCalories + dailyAdjustment;
   const dailyCalories = Math.max(1200, Math.round(calories / 10) * 10);
   const dailyProteinGrams = Math.round(input.currentWeightKg * 1.6);
   const dailyFatGrams = Math.max(40, Math.round((dailyCalories * 0.25) / 9));
@@ -62,9 +57,7 @@ export function calculateNutritionPlan(
     ),
   );
   const plannedWeeklyChangeKg =
-    input.goal === "maintain"
-      ? 0
-      : Number(((safeAdjustment * 7) / CALORIES_PER_KILOGRAM).toFixed(2));
+    input.goal === "maintain" ? 0 : input.requestedWeeklyChangeKg;
   const kilogramsToGoal = Math.abs(
     input.currentWeightKg - input.targetWeightKg,
   );
@@ -82,6 +75,6 @@ export function calculateNutritionPlan(
       ? addDays(now, daysToGoal).toISOString().slice(0, 10)
       : null,
     showsPaceWarning:
-      input.requestedWeeklyChangeKg > NHS_RECOMMENDED_MAX_LOSS_KG,
+      input.requestedWeeklyChangeKg > PACE_WARNING_THRESHOLD_KG,
   };
 }

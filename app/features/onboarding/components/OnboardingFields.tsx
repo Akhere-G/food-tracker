@@ -80,9 +80,7 @@ export function GoalFields({ value, onChange }: Props) {
         <fieldset>
           <legend className="font-medium">Desired weekly change</legend>
           <p className="mt-1 text-sm text-muted-foreground">
-            NHS guidance generally recommends{" "}
-            <a className="underline underline-offset-2 hover:text-foreground" href="https://assets.nhs.uk/tools/download-panels/data/weight-loss/pdf/all-weeks.pdf" target="_blank" rel="noreferrer">losing 0.5–1 kg per week</a> and{" "}
-            <a className="underline underline-offset-2 hover:text-foreground" href="https://www.nhs.uk/live-well/healthy-weight/managing-your-weight/healthy-ways-to-gain-weight/" target="_blank" rel="noreferrer">gaining gradually</a>.
+            Choose the pace you want to work towards. You can change it later.
           </p>
           <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-5">
             {WEEKLY_CHANGE_OPTIONS.map((rate) => (
@@ -91,7 +89,7 @@ export function GoalFields({ value, onChange }: Props) {
           </div>
           {value.requestedWeeklyChangeKg > 1 && (
             <p className="mt-3 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm" role="status">
-              This is above the usual NHS weight-loss range. FoodTracker will keep the generated energy adjustment conservative; speak with a healthcare professional before pursuing this pace.
+              This is an aggressive weekly target and may be difficult or unsafe for some people. Consider speaking with a healthcare professional before pursuing it.
             </p>
           )}
         </fieldset>

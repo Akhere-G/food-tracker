@@ -7,7 +7,9 @@ describe("nutrition plan", () => {
   it("accepts a requested change up to two kilograms per week", () => {
     const input = { ...createOnboardingDraft(), requestedWeeklyChangeKg: 2 };
     expect(onboardingInputSchema.safeParse(input).success).toBe(true);
-    expect(calculateNutritionPlan(input).showsPaceWarning).toBe(true);
+    const plan = calculateNutritionPlan(input);
+    expect(plan.plannedWeeklyChangeKg).toBe(2);
+    expect(plan.showsPaceWarning).toBe(true);
   });
 
   it("rejects weekly changes above the configured limit", () => {
@@ -15,16 +17,16 @@ describe("nutrition plan", () => {
     expect(onboardingInputSchema.safeParse(input).success).toBe(false);
   });
 
-  it("keeps aggressive requested deficits conservative", () => {
+  it("uses the chosen two-kilogram weight-loss goal", () => {
     const plan = calculateNutritionPlan(
       { ...createOnboardingDraft(), requestedWeeklyChangeKg: 2 },
       new Date("2026-11-16T12:00:00Z"),
     );
-    expect(plan.plannedWeeklyChangeKg).toBe(1);
+    expect(plan.plannedWeeklyChangeKg).toBe(2);
     expect(plan.dailyCalories).toBeGreaterThanOrEqual(1200);
   });
 
-  it("caps generated gain adjustments at 500 calories per day", () => {
+  it("uses the chosen two-kilogram weight-gain goal", () => {
     const draft = createOnboardingDraft();
     const plan = calculateNutritionPlan({
       ...draft,
@@ -32,7 +34,8 @@ describe("nutrition plan", () => {
       targetWeightKg: 90,
       requestedWeeklyChangeKg: 2,
     });
-    expect(plan.plannedWeeklyChangeKg).toBe(0.45);
+    expect(plan.plannedWeeklyChangeKg).toBe(2);
+    expect(plan.showsPaceWarning).toBe(true);
   });
 
   it("requires the target weight to match the goal direction", () => {

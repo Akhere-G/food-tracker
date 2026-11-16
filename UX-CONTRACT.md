@@ -55,7 +55,7 @@ Mutations are pessimistic and duplicate submission is blocked. Food search ignor
 
 ## Validation
 
-Zod owns boundary validation. Forms use `noValidate`, retain values, expose associated inline errors, and focus the first invalid field where supported. Goal rates above NHS guidance remain selectable up to 2 kg/week but display a persistent warning; generated energy adjustments remain conservatively capped.
+Zod owns boundary validation. Forms use `noValidate`, retain values, expose associated inline errors, and focus the first invalid field where supported. Users may choose weight-change goals up to 2 kg/week; goals above 1 kg/week display a persistent safety warning without overriding the selected pace.
 
 ## Verification
 

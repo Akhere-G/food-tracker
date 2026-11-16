@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { BarChart3, Home, Settings, Soup, Utensils } from "lucide-react";
+import { Home, Settings, Soup, Utensils } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import Logo from "./Logo";
 import { cn } from "@/lib/utils";
@@ -11,21 +11,15 @@ import { cn } from "@/lib/utils";
 const navigation = [
   { label: "Overview", href: "/dashboard", icon: Home },
   { label: "Meals", href: "/meals", icon: Utensils },
-  { label: "Progress", href: "/dashboard?period=month", icon: BarChart3 },
   { label: "Settings", href: "/settings", icon: Settings },
 ] as const;
 
 function NavigationLinks({ mobile = false }: { mobile?: boolean }) {
   const pathname = usePathname();
-  const period = useSearchParams().get("period");
   return navigation.map(({ label, href, icon: Icon }) => {
-    const route = href.split("?")[0];
-    const isProgress = label === "Progress";
-    const selected = isProgress
-      ? pathname === "/dashboard" && period !== null && period !== "week"
-      : (pathname === route &&
-          !(route === "/dashboard" && period && period !== "week")) ||
-        (route !== "/dashboard" && pathname.startsWith(route));
+    const selected =
+      pathname === href ||
+      (href !== "/dashboard" && pathname.startsWith(href));
     return (
       <Link
         key={label}
