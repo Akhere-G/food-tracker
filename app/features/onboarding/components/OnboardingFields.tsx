@@ -79,7 +79,11 @@ export function GoalFields({ value, onChange }: Props) {
       {value.goal !== "maintain" && (
         <fieldset>
           <legend className="font-medium">Desired weekly change</legend>
-          <p className="mt-1 text-sm text-muted-foreground">NHS guidance generally recommends losing 0.5–1 kg per week and gaining gradually.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            NHS guidance generally recommends{" "}
+            <a className="underline underline-offset-2 hover:text-foreground" href="https://assets.nhs.uk/tools/download-panels/data/weight-loss/pdf/all-weeks.pdf" target="_blank" rel="noreferrer">losing 0.5–1 kg per week</a> and{" "}
+            <a className="underline underline-offset-2 hover:text-foreground" href="https://www.nhs.uk/live-well/healthy-weight/managing-your-weight/healthy-ways-to-gain-weight/" target="_blank" rel="noreferrer">gaining gradually</a>.
+          </p>
           <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-5">
             {WEEKLY_CHANGE_OPTIONS.map((rate) => (
               <Choice key={rate} selected={value.requestedWeeklyChangeKg === rate} onClick={() => onChange({ requestedWeeklyChangeKg: rate })}>{rate} kg</Choice>
