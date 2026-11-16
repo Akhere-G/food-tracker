@@ -59,3 +59,5 @@ export function buildProgressSummary(
     dailyAverage: loggedDays ? Math.round(totalCalories / loggedDays) : 0,
   };
 }
+
+export type ProgressSummary = ReturnType<typeof buildProgressSummary>;
