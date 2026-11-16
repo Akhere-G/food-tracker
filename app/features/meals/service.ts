@@ -58,19 +58,21 @@ export async function replaceMeal(mealId: string, request: ReplaceMealRequest) {
     resolveEntry(entry, details),
   );
 
-  return db.transaction(async (tx) => {
-    const foodIds = await foodService.importFoods(tx, details);
-    const rows = await buildMealEntryRows(tx, mealId, entries, foodIds);
-    const updated = await repo.replaceMealEntries(
-      tx,
-      mealId,
-      userId,
-      new Date(request.eatenAt),
-      rows,
-    );
-    if (!updated) throw new AppError("Meal not found.", "not_found");
-    return { mealId };
+  const updated = await repo.replaceMealEntries({
+    mealId,
+    userId,
+    eatenAt: new Date(request.eatenAt),
+    createEntries: async (tx) => {
+      const foodIds = await foodService.importFoods(tx, details);
+      return buildMealEntryRows(tx, mealId, entries, foodIds);
+    },
   });
+
+  if (!updated) {
+    throw new AppError("Meal not found.", "not_found");
+  }
+
+  return { mealId };
 }
 
 export async function deleteMeal(mealId: string) {

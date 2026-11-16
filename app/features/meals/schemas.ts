@@ -22,9 +22,33 @@ export const mealEntryInput = z
 
 export type MealEntryInput = z.infer<typeof mealEntryInput>;
 
+const mealEntries = z
+  .array(mealEntryInput)
+  .min(1, "Add at least one food")
+  .superRefine((entries, context) => {
+    const foodReferences = new Set<string>();
+
+    entries.forEach((entry, index) => {
+      const reference = JSON.stringify([
+        entry.food.externalSource,
+        entry.food.externalId,
+      ]);
+
+      if (foodReferences.has(reference)) {
+        context.addIssue({
+          code: "custom",
+          message: "Each food can only appear once in a meal",
+          path: [index, "food"],
+        });
+      }
+
+      foodReferences.add(reference);
+    });
+  });
+
 export const saveMealRequest = z.object({
   eatenAt: isoDateTime.optional(),
-  mealEntries: z.array(mealEntryInput).min(1, "Add at least one food"),
+  mealEntries,
 });
 
 export type SaveMealRequest = z.infer<typeof saveMealRequest>;

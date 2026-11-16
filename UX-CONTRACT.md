@@ -28,7 +28,7 @@ The current user brief is authoritative for onboarding, a 30-day soft-delete rec
 | Form | Zod schema plus shared fields | feature schemas | create / edit / wizard | unit + browser |
 | Scrollbar | Global inherited theme | `app/globals.css` | stable-gutter exception | computed style |
 | Toast | Sonner provider | root layout | success / error | live-region inspection |
-| CRUD | Feature action/service/repository or route handler | meal feature | create / replace / soft-delete | unit + route flow |
+| CRUD | Feature server action/service/repository | meal feature | create / replace / soft-delete | unit + action flow |
 
 ## Flow ledger
 

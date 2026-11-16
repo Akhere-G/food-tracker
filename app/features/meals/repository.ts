@@ -64,22 +64,33 @@ export async function getMeal({
   });
 }
 
-export async function replaceMealEntries(
-  tx: Tx,
-  mealId: string,
-  userId: string,
-  eatenAt: Date,
-  entries: NewMealEntry[],
-) {
-  const [updated] = await tx
-    .update(meal)
-    .set({ eatenAt })
-    .where(and(eq(meal.id, mealId), eq(meal.userId, userId)))
-    .returning({ id: meal.id });
-  if (!updated) return false;
-  await tx.delete(mealEntry).where(eq(mealEntry.mealId, mealId));
-  await tx.insert(mealEntry).values(entries);
-  return true;
+type ReplaceMealEntriesInput = {
+  mealId: string;
+  userId: string;
+  eatenAt: Date;
+  createEntries: (tx: Tx) => Promise<NewMealEntry[]>;
+};
+
+export async function replaceMealEntries({
+  mealId,
+  userId,
+  eatenAt,
+  createEntries,
+}: ReplaceMealEntriesInput) {
+  return db.transaction(async (tx) => {
+    const [updated] = await tx
+      .update(meal)
+      .set({ eatenAt })
+      .where(and(eq(meal.id, mealId), eq(meal.userId, userId)))
+      .returning({ id: meal.id });
+
+    if (!updated) return false;
+
+    const entries = await createEntries(tx);
+    await tx.delete(mealEntry).where(eq(mealEntry.mealId, mealId));
+    await tx.insert(mealEntry).values(entries);
+    return true;
+  });
 }
 
 export async function deleteMeal(mealId: string, userId: string) {

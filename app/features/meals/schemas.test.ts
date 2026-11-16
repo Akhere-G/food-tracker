@@ -35,4 +35,29 @@ describe("meal request schema", () => {
 
     expect(result.success).toBe(false);
   });
+
+  it("rejects duplicate foods from the same external source", () => {
+    const result = saveMealRequest.safeParse({
+      mealEntries: [mealEntry, { ...mealEntry, amountInGrams: 200 }],
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0]?.message).toBe(
+      "Each food can only appear once in a meal",
+    );
+  });
+
+  it("allows matching external IDs from different sources", () => {
+    const result = saveMealRequest.safeParse({
+      mealEntries: [
+        mealEntry,
+        {
+          ...mealEntry,
+          food: { externalId: "food-1", externalSource: "other" },
+        },
+      ],
+    });
+
+    expect(result.success).toBe(true);
+  });
 });
