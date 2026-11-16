@@ -1,8 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Serving } from "@/db/food-schema";
 import { FoodSearchItem } from "@/integrations/all-nutrients/schema";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getFoodDetails } from "../../food/actions";
 import { FoodImportData } from "../../food/schemas";

@@ -1,134 +1,155 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Meal } from "@/db/food-schema";
-import { Calendar, ChevronLeft, ChevronRight, Dot, Menu } from "lucide-react";
-import React, { use, useEffect, useRef, useState } from "react";
+
+import { use, useRef } from "react";
 import {
   addDays,
-  formatDate,
+  format,
   isSameDay,
   isToday,
   isTomorrow,
-  isValid,
   isYesterday,
   startOfWeek,
 } from "date-fns";
+import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { energyValue, type EnergyUnit } from "@/app/features/settings/units";
+import ErrorComponent from "@/components/layout/Error";
+import { Button } from "@/components/ui/button";
+import type { Meal } from "@/db/food-schema";
+import type { ActionResult } from "@/lib/action";
+import { isValidDateInput } from "@/lib/date-input";
 import { calculateNutrients } from "../utils";
 import NutrientTotal from "./NutrientTotal";
-import { ActionResult } from "@/lib/action";
-import ErrorComponent from "@/components/layout/Error";
+
+type Goals = {
+  Calories: number;
+  Protein: number;
+  "Total carbohydrates": number;
+  "Total fat": number;
+};
+
+function selectedDate(value: string | null) {
+  return isValidDateInput(value)
+    ? new Date(`${value}T12:00:00`)
+    : new Date();
+}
+
 export default function MealsHeader({
   mealsPromise,
+  goals,
+  energyUnit,
 }: {
   mealsPromise: Promise<ActionResult<Meal[]>>;
+  goals: Goals;
+  energyUnit: EnergyUnit;
 }) {
-  const mealsResult = use(mealsPromise);
-
-  const errorMessage = !mealsResult.success ? mealsResult.error : "";
-  const meals = mealsResult.success ? mealsResult.data : [];
-
-  const searchParams = useSearchParams();
+  const result = use(mealsPromise);
   const router = useRouter();
-
-  const dateStr = searchParams.get("date");
-  const date = dateStr ? new Date(dateStr) : new Date();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const currentDate = isValid(date) ? new Date(date!) : new Date();
-
-  const start = startOfWeek(currentDate);
-  const days = [0, 1, 2, 3, 4, 5, 6].map((day) => addDays(start, day));
-  const currentDateButtonRef = useRef<HTMLButtonElement | null>(null);
+  const searchParams = useSearchParams();
+  const currentDate = selectedDate(searchParams.get("date"));
   const datePickerRef = useRef<HTMLInputElement | null>(null);
+  const start = startOfWeek(currentDate, { weekStartsOn: 1 });
+  const days = Array.from({ length: 7 }, (_, index) => addDays(start, index));
 
-  const setCurrentDate = (newDate: Date) =>
-    router.push(`/meals?date=${formatDate(newDate, "yyyy-MM-dd")}`);
-
-  const allEntries = meals.flatMap((m) => m.entries);
-  const nutrientTotals = calculateNutrients(allEntries);
-  useEffect(() => {
-    if (currentDateButtonRef.current) {
-      currentDateButtonRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-      });
-    }
-  }, [currentDate]);
-
-  let dateTitle = formatDate(currentDate, "dd/MM/yy");
-  if (isToday(currentDate)) {
-    dateTitle = "Today";
-  } else if (isYesterday(currentDate)) {
-    dateTitle = "Yesterday";
-  } else if (isTomorrow(currentDate)) {
-    dateTitle = "Tomorrow";
+  if (!result.success) return <ErrorComponent message={result.error} />;
+  const totals = calculateNutrients(result.data.flatMap((meal) => meal.entries));
+  for (const [name, target] of Object.entries(goals)) {
+    totals[name].dailyMax = target;
   }
 
-  if (errorMessage) {
-    return <ErrorComponent message={errorMessage} />;
+  if (energyUnit === "kj") {
+    totals.Calories.amount = energyValue(totals.Calories.amount, "kj");
+    totals.Calories.dailyMax = energyValue(totals.Calories.dailyMax, "kj");
+    totals.Calories.unit = "kj";
   }
+  const dateTitle = isToday(currentDate)
+    ? "Today"
+    : isYesterday(currentDate)
+      ? "Yesterday"
+      : isTomorrow(currentDate)
+        ? "Tomorrow"
+        : format(currentDate, "EEEE, d MMMM");
+  const openDate = (date: Date) => {
+    router.push(`/meals?date=${format(date, "yyyy-MM-dd")}`);
+  };
+
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="flex flex-col gap-4 py-2">
-        <div className="flex justify-center ">
-          <div className="relative flex gap-2 items-center justify-between ">
-            <Button onClick={() => setCurrentDate(addDays(currentDate, -1))}>
-              <ChevronLeft />
-            </Button>
-            <div className="">
-              <span className="w-20 text-center">{dateTitle}</span>
-            </div>
-            <Button onClick={() => setCurrentDate(addDays(currentDate, 1))}>
-              <ChevronRight />
-            </Button>
-          </div>
-          <div className="absolute right-4">
-            <Button
-              variant="secondary"
-              onClick={() => datePickerRef.current?.showPicker()}
-            >
-              <Calendar />
-            </Button>
-            <input
-              ref={datePickerRef}
-              type="date"
-              className="w-0"
-              onChange={(e) => setCurrentDate(new Date(e.target.value))}
-            />
-          </div>
+    <header>
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b pb-6">
+        <div>
+          <p className="text-sm font-medium text-primary">Daily log</p>
+          <h1 className="title mt-1">{dateTitle}</h1>
         </div>
-        <div className="flex gap-0 justify-evenly overflow-y-scroll">
-          {days.map((date) => {
-            const selected = isSameDay(date, currentDate);
-            return (
-              <Button
-                ref={selected ? currentDateButtonRef : null}
-                key={date.valueOf()}
-                onClick={() => setCurrentDate(date)}
-                className={`hover:bg-accent py-10 px-3 bg-card text-secondary-foreground flex flex-col gap-0 ${selected ? "bg-accent" : ""}`}
-              >
-                <span className="text-sm text-muted-foreground">
-                  {formatDate(date, "ccccc")}
-                </span>
-                <span>
-                  <span>{formatDate(date, "dd")}</span>
-                  <Dot
-                    className={`text-primary ${selected ? "opacity-100" : "opacity-0"}`}
-                  />
-                </span>
-              </Button>
-            );
-          })}
-        </div>
-        <div className="grid gap-4 flex-wrap grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
-          {Object.values(nutrientTotals).map((nutrientTotal) => (
-            <NutrientTotal
-              key={nutrientTotal.name}
-              nutrientTotal={nutrientTotal}
-            />
-          ))}
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => openDate(addDays(currentDate, -1))}
+            aria-label="Previous day"
+          >
+            <ChevronLeft />
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => datePickerRef.current?.showPicker()}
+          >
+            <Calendar /> Choose date
+          </Button>
+          <input
+            ref={datePickerRef}
+            type="date"
+            className="sr-only"
+            value={format(currentDate, "yyyy-MM-dd")}
+            onChange={(event) =>
+              openDate(new Date(`${event.target.value}T12:00:00`))
+            }
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => openDate(addDays(currentDate, 1))}
+            aria-label="Next day"
+          >
+            <ChevronRight />
+          </Button>
         </div>
       </div>
-    </div>
+      <div
+        className="mt-5 grid grid-cols-7 gap-1"
+        aria-label="Week beginning Monday"
+      >
+        {days.map((date) => {
+          const active = isSameDay(date, currentDate);
+          return (
+            <button
+              key={date.toISOString()}
+              type="button"
+              onClick={() => openDate(date)}
+              aria-current={active ? "date" : undefined}
+              className={`rounded-lg py-3 text-center text-sm ${
+                active
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted"
+              }`}
+            >
+              <span className="block text-xs opacity-75">
+                {format(date, "EEEEE")}
+              </span>
+              <span className="mt-1 block font-semibold">
+                {format(date, "d")}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      <section
+        className="mt-6 grid gap-4 border-y py-6 sm:grid-cols-2 xl:grid-cols-4"
+        aria-label="Daily nutrition totals"
+      >
+        {Object.values(totals).map((total) => (
+          <NutrientTotal key={total.name} nutrientTotal={total} />
+        ))}
+      </section>
+    </header>
   );
 }

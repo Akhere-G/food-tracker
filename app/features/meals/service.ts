@@ -6,7 +6,7 @@ import { AppError } from "@/lib/errors";
 import type { FoodImportData } from "../food/schemas";
 import * as foodService from "../food/service";
 import * as repo from "./repository";
-import { MealEntryInput, SaveMealRequest } from "./schemas";
+import { MealEntryInput, ReplaceMealRequest, SaveMealRequest } from "./schemas";
 
 type FoodDetails = Map<string, FoodImportData>;
 
@@ -40,6 +40,45 @@ export async function saveMeal(request: SaveMealRequest) {
     await repo.insertMealEntries(tx, rows);
     return { mealId };
   });
+}
+
+export async function getMeal(mealId: string) {
+  const userId = await requireUserId();
+  const result = await repo.getMeal({ mealId, userId });
+  if (!result) throw new AppError("Meal not found.", "not_found");
+  return result;
+}
+
+export async function replaceMeal(mealId: string, request: ReplaceMealRequest) {
+  const userId = await requireUserId();
+  const existing = await repo.getMeal({ mealId, userId });
+  if (!existing) throw new AppError("Meal not found.", "not_found");
+  const details = await loadFoodDetails(request.mealEntries);
+  const entries = request.mealEntries.map((entry) =>
+    resolveEntry(entry, details),
+  );
+
+  const updated = await repo.replaceMealEntries({
+    mealId,
+    userId,
+    eatenAt: new Date(request.eatenAt),
+    createEntries: async (tx) => {
+      const foodIds = await foodService.importFoods(tx, details);
+      return buildMealEntryRows(tx, mealId, entries, foodIds);
+    },
+  });
+
+  if (!updated) {
+    throw new AppError("Meal not found.", "not_found");
+  }
+
+  return { mealId };
+}
+
+export async function deleteMeal(mealId: string) {
+  const userId = await requireUserId();
+  const deleted = await repo.deleteMeal(mealId, userId);
+  if (!deleted) throw new AppError("Meal not found.", "not_found");
 }
 
 // Never trust client data: nutrition and servings come from the provider.

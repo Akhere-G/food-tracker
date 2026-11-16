@@ -1,30 +1,23 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import MealForm from "./MealForm";
-import { MealEntryData } from "../types";
+import type { EnergyUnit } from "@/app/features/settings/units";
+import { saveMeal } from "../actions";
+import MealEditor from "./MealEditor";
 
-interface AddMealFormProps {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-  addEntry: (entry: MealEntryData) => void;
-}
-export default function AddMealForm({
-  isOpen,
-  setIsOpen,
-  addEntry,
-}: AddMealFormProps) {
+type AddMealFormProps = {
+  initialDate: string;
+  initialTime: string;
+  energyUnit?: EnergyUnit;
+  timezone: string;
+};
+
+export default function AddMealForm(props: AddMealFormProps) {
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle className="text-xl">Add Meal</DialogTitle>
-        </DialogHeader>
-        <MealForm sumbitAction={addEntry} closeForm={() => setIsOpen(false)} />
-      </DialogContent>
-    </Dialog>
+    <MealEditor
+      {...props}
+      title="Add meal"
+      submitLabel="Save meal"
+      successMessage="Meal added"
+      summaryLabel="This meal — not saved yet"
+      submitAction={saveMeal}
+    />
   );
 }

@@ -1,9 +1,8 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth-session";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import { Home, Utensils } from "lucide-react";
+import DashboardShell from "@/components/layout/DashboardShell";
+import { getOnboardingProfile, getPreferences } from "@/app/features/onboarding/service";
 
 async function ProtectedDashboard({ children }: { children: React.ReactNode }) {
   const session = await getSession();
@@ -11,7 +10,22 @@ async function ProtectedDashboard({ children }: { children: React.ReactNode }) {
     redirect("/login");
   }
 
-  return <>{children}</>;
+  const [profile, preferences] = await Promise.all([
+    getOnboardingProfile(session.user.id),
+    getPreferences(session.user.id),
+  ]);
+  if (!profile) redirect("/onboarding");
+
+  return (
+    <DashboardShell
+      appearance={{
+        themeMode: preferences?.themeMode ?? "system",
+        colorTheme: preferences?.colorTheme ?? "cranberry",
+      }}
+    >
+      {children}
+    </DashboardShell>
+  );
 }
 
 export default function DashboardLayout({
@@ -19,46 +33,9 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const links = [
-    { name: "Dashboard", url: "/dashboard", icon: <Home /> },
-    { name: "Meals", url: "/meals", icon: <Utensils /> },
-  ];
-
-  const groupedLinks = [
-    {
-      title: "Account",
-      links: [
-        { name: "Dashboard", url: "/dashboard" },
-        { name: "Meals", url: "/meals" },
-        { name: "Settings", url: "/settings" },
-      ],
-    },
-    {
-      title: "Company",
-      links: [
-        { name: "About", url: "/" },
-        { name: "Contact", url: "/contact" },
-        { name: "FAQ", url: "/faq" },
-      ],
-    },
-    {
-      title: "Legal",
-      links: [
-        { name: "Terms", url: "/terms" },
-        { name: "Privacy", url: "/privacy" },
-      ],
-    },
-  ];
-
   return (
-    <>
-      <Header links={links} isAuthenticated />
-      <main className="min-h-screen">
-        <Suspense fallback={<div>Loading...</div>}>
-          <ProtectedDashboard>{children}</ProtectedDashboard>
-        </Suspense>
-      </main>
-      <Footer groupedLinks={groupedLinks} />
-    </>
+    <Suspense fallback={<div className="page-shell">Loading…</div>}>
+      <ProtectedDashboard>{children}</ProtectedDashboard>
+    </Suspense>
   );
 }

@@ -33,7 +33,7 @@ export default function LoginForm() {
   }
 
   return (
-    <form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
+    <form className="flex flex-col gap-2" noValidate onSubmit={handleSubmit(onSubmit)}>
       {errorMessage && <p className="text-destructive">{errorMessage}</p>}
       <FormInput
         label="Email"
