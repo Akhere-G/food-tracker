@@ -25,7 +25,7 @@ export default function PlanSummary({ value }: { value: OnboardingInput }) {
           <SummaryTerm label="Protein" value={`${plan.dailyProteinGrams} g`} />
           <SummaryTerm label="Carbohydrate" value={`${plan.dailyCarbohydrateGrams} g`} />
           <SummaryTerm label="Fat" value={`${plan.dailyFatGrams} g`} />
-          <SummaryTerm label="Chosen weekly goal" value={`${plan.plannedWeeklyChangeKg} kg`} />
+          <SummaryTerm label="Planned weekly pace" value={`${plan.plannedWeeklyChangeKg} kg`} />
         </dl>
       </div>
       <aside className="rounded-xl bg-accent p-6 text-accent-foreground">
