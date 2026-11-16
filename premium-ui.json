@@ -1,0 +1,21 @@
+{
+  "profile": "product-admin",
+  "sourceRoots": ["app", "components", "lib"],
+  "locale": "en-GB",
+  "canonicalMap": "UX-CONTRACT.md",
+  "requiredCapabilities": ["Select/Listbox", "Date", "Form", "Scrollbar", "Toast", "CRUD"],
+  "ownership": {
+    "Select/Listbox": "native",
+    "Date": "native"
+  },
+  "requiredCommands": ["lint", "test", "build"],
+  "commands": {
+    "lint": "npm run lint",
+    "test": "npm test",
+    "build": "npm run build"
+  },
+  "evidence": {
+    "crudFullFlow": "app/features/meals/__tests__/meal-domain.test.ts",
+    "failurePaths": "app/features/onboarding/__tests__/nutrition-plan.test.ts"
+  }
+}

@@ -14,3 +14,7 @@ export {
   nutrient,
   serving,
 } from "./food-schema";
+export {
+  nutritionProfile,
+  userPreferences,
+} from "./profile-schema";
