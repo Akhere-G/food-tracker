@@ -24,6 +24,15 @@ export const onboardingInputSchema = z
     timezone: z.string().trim().min(1).max(100),
   })
   .superRefine((value, context) => {
+    const birthDate = new Date(`${value.dateOfBirth}T12:00:00`);
+    const age = new Date().getFullYear() - birthDate.getFullYear();
+    if (age < 18 || age > 100) {
+      context.addIssue({
+        code: "custom",
+        path: ["dateOfBirth"],
+        message: "FoodTracker currently supports adults aged 18 to 100.",
+      });
+    }
     if (value.goal === "maintain" && value.requestedWeeklyChangeKg !== 0) {
       context.addIssue({
         code: "custom",

@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Geist_Mono, Inter, Lora } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
+import ThemeProvider from "@/components/providers/ThemeProvider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const lora = Lora({
+  variable: "--font-lora",
   subsets: ["latin"],
 });
 
@@ -28,15 +29,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={cn(
         "h-full",
         "antialiased",
-        geistSans.variable,
         geistMono.variable,
+        lora.variable,
         "font-sans",
         inter.variable,
       )}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
-        <main className="min-h-screen">{children}</main>
-        <Toaster closeButton position="top-right" richColors />
+      <body className="min-h-full">
+        <ThemeProvider>
+          {children}
+          <Toaster closeButton position="top-right" richColors />
+        </ThemeProvider>
       </body>
     </html>
   );

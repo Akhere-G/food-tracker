@@ -10,6 +10,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { saveOnboarding } from "@/app/features/onboarding/actions";
+import {
+  ONBOARDING_STORAGE_KEY,
+  parseOnboardingDraft,
+} from "@/app/features/onboarding/draft";
 export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -32,6 +37,22 @@ export default function RegisterForm() {
       if (error) {
         setErrorMessage(error.message ?? "Sorry, something went wrong...");
       } else {
+        const storedOnboarding = window.localStorage.getItem(
+          ONBOARDING_STORAGE_KEY,
+        );
+        if (storedOnboarding) {
+          const onboarding = parseOnboardingDraft(storedOnboarding);
+          if (onboarding) {
+            const result = await saveOnboarding(onboarding);
+            if (!result.success) {
+              setErrorMessage(
+                "Your account was created, but your nutrition plan could not be saved. You can finish it after signing in.",
+              );
+              return;
+            }
+            window.localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+          }
+        }
         router.push("/dashboard");
       }
     } finally {
@@ -40,7 +61,11 @@ export default function RegisterForm() {
   }
 
   return (
-    <form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="flex flex-col gap-2"
+      noValidate
+      onSubmit={handleSubmit(onSubmit)}
+    >
       {errorMessage && <p className="text-destructive">{errorMessage}</p>}
       <FormInput
         label="Name"
@@ -80,8 +105,8 @@ export default function RegisterForm() {
         </p>
       </div>
       <div className="flex flex-col gap-1 mt-4">
-        <Link href="/register" className="text-primary">
-          Already made an account? login instead
+        <Link href="/login" className="text-primary">
+          Already have an account? Sign in instead
         </Link>
         <Button type="submit" disabled={isLoading}>
           Register
