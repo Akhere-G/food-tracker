@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import Logo from "@/components/layout/Logo";
+import OnboardingSkeleton from "@/app/features/onboarding/components/OnboardingSkeleton";
 import OnboardingWizard from "@/app/features/onboarding/components/OnboardingWizard";
 import { getSession } from "@/lib/auth-session";
 import { getOnboardingProfile } from "@/app/features/onboarding/service";
@@ -25,10 +27,9 @@ export default function OnboardingPage() {
           Your answers stay on this device until you create an account.
         </p>
       </header>
-      <Suspense fallback={<div className="mx-auto max-w-5xl py-20 text-muted-foreground">Preparing your plan…</div>}>
+      <Suspense fallback={<OnboardingSkeleton />}>
         <OnboardingContent />
       </Suspense>
     </main>
   );
 }
-import { Suspense } from "react";

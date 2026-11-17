@@ -1,5 +1,6 @@
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
+import AuthSessionSkeleton from "@/app/features/auth/components/AuthSessionSkeleton";
 import { getSession } from "@/lib/auth-session";
 import { LogInIcon, UserPlus } from "lucide-react";
 import { redirect } from "next/navigation";
@@ -49,7 +50,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <>
       <Header links={links} />
       <main className="min-h-screen">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<AuthSessionSkeleton />}>
           <ProtectedDashboard>{children}</ProtectedDashboard>
         </Suspense>
       </main>

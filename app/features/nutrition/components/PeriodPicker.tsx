@@ -84,7 +84,7 @@ export default function PeriodPicker({
             The nutrition report will update to the {period} you select.
           </DialogDescription>
         </DialogHeader>
-        <form className="grid gap-5" onSubmit={submit}>
+        <form className="grid gap-5" noValidate onSubmit={submit}>
           <label className="grid gap-2 font-medium capitalize">
             {period}
             <Input

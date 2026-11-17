@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { LoaderCircle, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { searchFoods } from "@/app/features/food/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { FoodSearchItem } from "@/integrations/all-nutrients/schema";
+import FoodLookupSkeleton from "./FoodLookupSkeleton";
 
 export default function SearchForm({
   selectFood,
@@ -27,19 +28,29 @@ export default function SearchForm({
     async function getSearchResults() {
       setIsLoading(true);
       setErrorMessage("");
-      const result = await searchFoods(search.trim());
-      if (currentRequest !== requestId.current) return;
-
-      if (result.success) {
-        setResults(result.data);
-      } else {
-        setErrorMessage(result.error);
+      try {
+        const result = await searchFoods(search.trim());
+        if (currentRequest !== requestId.current) return;
+        if (result.success) {
+          setResults(result.data);
+        } else {
+          setResults([]);
+          setErrorMessage(result.error);
+        }
+      } catch {
+        if (currentRequest !== requestId.current) return;
+        setResults([]);
+        setErrorMessage("We could not search for foods. Try again.");
+      } finally {
+        if (currentRequest === requestId.current) setIsLoading(false);
       }
-      setIsLoading(false);
     }
     const timeout = setTimeout(getSearchResults, 300);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      requestId.current += 1;
+    };
   }, [composing, search]);
 
   function updateSearch(value: string) {
@@ -83,18 +94,14 @@ export default function SearchForm({
           </button>
         )}
       </div>
-      {isLoading && (
-        <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
-          <LoaderCircle className="size-4 animate-spin" /> Searching…
-        </p>
-      )}
+      {isLoading && <div className="mt-4"><FoodLookupSkeleton label="Searching foods…" /></div>}
       {errorMessage && (
         <p className="mt-3 text-sm text-destructive" role="alert">
           {errorMessage}
         </p>
       )}
-      <div className="mt-4 flex max-h-64 min-w-0 flex-col overflow-y-auto">
-        {results.map((result) => (
+      <div className="mt-4 flex max-h-64 min-w-0 flex-col overflow-y-auto" hidden={isLoading}>
+        {!isLoading && results.map((result) => (
           <Button
             variant="ghost"
             key={result.id}

@@ -29,6 +29,7 @@ The current user brief is authoritative for onboarding, a 30-day soft-delete rec
 | Scrollbar | Global inherited theme | `app/globals.css` | stable-gutter exception | computed style |
 | Toast | Sonner provider | root layout | success / error | live-region inspection |
 | CRUD | Feature server action/service/repository | meal feature | create / replace / soft-delete | unit + action flow |
+| Loading | `Skeleton` + `LoadingRegion` | shared UI primitives and feature skeletons | page / session shell / food lookup | accessibility + slow-response browser checks |
 
 ## Flow ledger
 
@@ -52,6 +53,8 @@ Use the shared Base UI dialog. Destructive account and meal deletion require exp
 ## Async and resilience
 
 Mutations are pessimistic and duplicate submission is blocked. Food search ignores stale responses. Client drafts remain in memory for meal editing and local storage for guest onboarding. Failed mutations preserve input and provide retry. Server ownership checks remain authoritative.
+
+Initial page/session reads and onboarding draft restoration use skeletons shaped to the pending content. Route `loading.tsx` files cover authenticated pages and Login/Register; onboarding keeps its header visible with a local Suspense fallback. Food search and serving-size reads use local skeletons while preserving the query and selected food. Loading shapes are decorative, non-interactive, theme-aware, and static under reduced motion, with one screen-reader status per region. Date and reporting-period changes retain existing data until the new response arrives; mutations retain their inputs and busy buttons. Static public pages render directly without an artificial loading delay.
 
 ## Validation
 
