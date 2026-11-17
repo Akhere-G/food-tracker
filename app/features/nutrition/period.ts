@@ -9,6 +9,7 @@ import {
   endOfYear,
   format,
   isValid,
+  parse,
   startOfMonth,
   startOfDay,
   startOfWeek,
@@ -18,9 +19,24 @@ import { isValidDateInput } from "@/lib/date-input";
 
 export const NUTRITION_PERIODS = ["day", "week", "month", "year"] as const;
 export type NutritionPeriod = (typeof NUTRITION_PERIODS)[number];
+const PICKER_REFERENCE_DATE = new Date(2000, 0, 1);
 
 export function parseNutritionPeriod(value?: string): NutritionPeriod {
   return NUTRITION_PERIODS.find((period) => period === value) ?? "week";
+}
+
+export function nutritionPickerAnchor(
+  period: NutritionPeriod,
+  value: string,
+) {
+  const inputFormat = {
+    day: "yyyy-MM-dd",
+    week: "RRRR-'W'II",
+    month: "yyyy-MM",
+    year: "yyyy",
+  }[period];
+  const date = parse(value, inputFormat, PICKER_REFERENCE_DATE);
+  return isValid(date) ? format(date, "yyyy-MM-dd") : null;
 }
 
 function zonedAnchor(timezone: string, value?: string) {

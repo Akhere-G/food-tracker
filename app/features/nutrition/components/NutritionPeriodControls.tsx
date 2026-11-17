@@ -1,4 +1,4 @@
-import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { NUTRITION_PERIODS, type NutritionPeriod } from "../period";
@@ -52,12 +52,12 @@ export default function NutritionPeriodControls({
         >
           <ChevronLeft aria-hidden="true" />
         </Link>
-        <div className="relative flex min-h-11 min-w-0 max-w-sm flex-1 items-center justify-center gap-2 rounded-lg px-2 font-medium hover:bg-muted lg:flex-none lg:px-5">
-          <CalendarDays aria-hidden="true" className="size-4 text-muted-foreground" />
-          <span className="truncate">{label}</span>
-          <ChevronDown aria-hidden="true" className="size-4" />
-          <PeriodPicker period={period} value={pickerValue} nutrient={nutrient} />
-        </div>
+        <PeriodPicker
+          period={period}
+          value={pickerValue}
+          label={label}
+          nutrient={nutrient}
+        />
         <Link
           href={href(period, next)}
           className="grid size-11 place-items-center rounded-lg hover:bg-muted"
