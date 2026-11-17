@@ -101,6 +101,10 @@ Lucide supplies functional icons at a consistent 1.75px stroke. Icons supplement
 
 Motion is limited to fast state feedback and dialog transitions. It is interruptible and disabled under `prefers-reduced-motion`.
 
+### Loading
+
+Initial data loads use layout-matched placeholders, following the same ledger rules, columns, spacing, and responsive order as the resolved screen. `components/ui/skeleton.tsx` consumes the existing `border` colour and medium radius through Tailwind; `app/globals.css` remains the token owner in every theme. A subtle pulse runs only when motion is allowed. `LoadingRegion` announces one loading status and hides decorative shapes from assistive technology. Existing data stays visible during date and reporting-period navigation; saving retains form inputs and busy actions.
+
 ### Content and data visualization
 
 The voice is practical, specific, and non-judgmental. Missed days are neutral gaps. Progress copy recognises returning rather than perfection. Numeric targets show units and their comparison basis.

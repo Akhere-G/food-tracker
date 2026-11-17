@@ -4,7 +4,7 @@ import MealsHeader from "@/app/features/meals/components/MealsHeader";
 import MealsList from "@/app/features/meals/components/MealsList";
 import { getOnboardingProfile, getPreferences } from "@/app/features/onboarding/service";
 import { dayRange } from "@/app/features/progress/period";
-import Loader from "@/components/layout/Loader";
+import MealsSkeleton from "@/app/features/meals/components/MealsSkeleton";
 import { requireUserId } from "@/lib/auth-session";
 
 export default async function MealsPage({
@@ -29,7 +29,7 @@ export default async function MealsPage({
   };
 
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<MealsSkeleton />}>
       <div className="page-shell">
         <MealsHeader
           mealsPromise={mealsPromise}

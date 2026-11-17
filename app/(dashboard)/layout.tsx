@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth-session";
 import DashboardShell from "@/components/layout/DashboardShell";
+import DashboardShellSkeleton from "@/components/layout/loading/DashboardShellSkeleton";
 import { getOnboardingProfile, getPreferences } from "@/app/features/onboarding/service";
 
 async function ProtectedDashboard({ children }: { children: React.ReactNode }) {
@@ -34,7 +35,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Suspense fallback={<div className="page-shell">Loading…</div>}>
+    <Suspense fallback={<DashboardShellSkeleton />}>
       <ProtectedDashboard>{children}</ProtectedDashboard>
     </Suspense>
   );

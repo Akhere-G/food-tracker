@@ -11,6 +11,7 @@ import {
 } from "../draft";
 import { onboardingInputSchema, type OnboardingInput } from "../schemas";
 import OnboardingNavigation from "./OnboardingNavigation";
+import OnboardingSkeleton from "./OnboardingSkeleton";
 import OnboardingProgress from "./OnboardingProgress";
 import OnboardingStepContent from "./OnboardingStepContent";
 import { onboardingSteps } from "./onboarding-steps";
@@ -100,6 +101,8 @@ export default function OnboardingWizard({
       router.push("/dashboard");
     }
   }
+
+  if (!ready) return <OnboardingSkeleton />;
 
   return (
     <section className="mx-auto w-full max-w-5xl">
