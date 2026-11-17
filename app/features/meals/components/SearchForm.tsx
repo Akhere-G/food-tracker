@@ -1,10 +1,11 @@
 "use client";
-import { Input } from "@/components/ui/input";
+
 import { useEffect, useRef, useState } from "react";
-import { searchFoods } from "../../food/actions";
-import { FoodSearchItem } from "@/integrations/all-nutrients/schema";
-import { Button } from "@/components/ui/button";
 import { LoaderCircle, Search, X } from "lucide-react";
+import { searchFoods } from "@/app/features/food/actions";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import type { FoodSearchItem } from "@/integrations/all-nutrients/schema";
 
 export default function SearchForm({
   selectFood,
@@ -52,24 +53,57 @@ export default function SearchForm({
   }
 
   return (
-    <div>
-      <label htmlFor="food-search" className="text-sm font-medium">Search for a food</label>
-      <div className="relative mt-2">
-        <Search className="pointer-events-none absolute left-3 top-3 size-4 text-muted-foreground" />
-        <Input id="food-search" className="px-9" autoComplete="off" placeholder="Try chicken soup" onCompositionStart={() => setComposing(true)} onCompositionEnd={(event) => { setComposing(false); updateSearch(event.currentTarget.value); }} onChange={(e) => updateSearch(e.target.value)} value={search} />
-        {search && <button type="button" className="absolute right-2 top-2 rounded p-1 hover:bg-muted" onClick={() => updateSearch("")} aria-label="Clear search"><X className="size-4" /></button>}
+    <div className="min-w-0">
+      <label htmlFor="food-search" className="text-sm font-medium">
+        Search for a food
+      </label>
+      <div className="relative mt-2 min-w-0">
+        <Search className="pointer-events-none absolute top-3 left-3 size-4 text-muted-foreground" />
+        <Input
+          id="food-search"
+          className="min-w-0 px-9"
+          autoComplete="off"
+          placeholder="Try chicken soup"
+          onCompositionStart={() => setComposing(true)}
+          onCompositionEnd={(event) => {
+            setComposing(false);
+            updateSearch(event.currentTarget.value);
+          }}
+          onChange={(event) => updateSearch(event.target.value)}
+          value={search}
+        />
+        {search && (
+          <button
+            type="button"
+            className="absolute top-2 right-2 rounded p-1 hover:bg-muted"
+            onClick={() => updateSearch("")}
+            aria-label="Clear search"
+          >
+            <X className="size-4" />
+          </button>
+        )}
       </div>
-      {isLoading && <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground"><LoaderCircle className="size-4 animate-spin" /> Searching…</p>}
-      {errorMessage && <p className="mt-3 text-sm text-destructive" role="alert">{errorMessage}</p>}
-      <div className="mt-4 flex flex-col">
+      {isLoading && (
+        <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+          <LoaderCircle className="size-4 animate-spin" /> Searching…
+        </p>
+      )}
+      {errorMessage && (
+        <p className="mt-3 text-sm text-destructive" role="alert">
+          {errorMessage}
+        </p>
+      )}
+      <div className="mt-4 flex max-h-64 min-w-0 flex-col overflow-y-auto">
         {results.map((result) => (
           <Button
             variant="ghost"
             key={result.id}
-            className="text-left! justify-start"
+            className="h-auto min-h-9 w-full min-w-0 justify-start py-2 text-left! whitespace-normal"
             onClick={() => selectFood(result)}
           >
-            {result.name}
+            <span className="min-w-0 [overflow-wrap:anywhere]">
+              {result.name}
+            </span>
           </Button>
         ))}
       </div>

@@ -34,14 +34,14 @@ export default function FoodPicker({
   }
 
   return (
-    <div>
+    <div className="min-w-0">
       <h3 className="mb-2 text-lg">Add food</h3>
-      <Tabs defaultValue="search">
+      <Tabs defaultValue="search" className="min-w-0">
         <TabsList>
           <TabsTrigger value="search">Search</TabsTrigger>
           <TabsTrigger value="barcode">Barcode</TabsTrigger>
         </TabsList>
-        <TabsContent value="search">
+        <TabsContent value="search" className="min-w-0">
           <SearchForm selectFood={setSelectedFood} />
         </TabsContent>
         <TabsContent value="barcode">

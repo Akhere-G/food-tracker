@@ -9,6 +9,34 @@ async function addChickenSoup(page: import("@playwright/test").Page) {
   await page.getByRole("button", { name: "Add Food" }).click();
 }
 
+async function expectLongSearchResultToFitDialog(
+  page: import("@playwright/test").Page,
+) {
+  await page.getByRole("button", { name: "Add food", exact: true }).click();
+  await page.getByLabel("Search for a food").fill("dumplings");
+
+  const dialog = page.getByRole("dialog", { name: "Add food" });
+  const result = dialog.getByRole("button", {
+    name: /vegetables excluding carrots/,
+  });
+  await expect(result).toBeVisible();
+
+  const fitsDialog = await result.evaluate((element) => {
+    const dialogContent = element.closest('[data-slot="dialog-content"]');
+    if (!dialogContent) return false;
+
+    const resultBounds = element.getBoundingClientRect();
+    const dialogBounds = dialogContent.getBoundingClientRect();
+    return (
+      resultBounds.left >= dialogBounds.left &&
+      resultBounds.right <= dialogBounds.right &&
+      element.scrollWidth <= element.clientWidth
+    );
+  });
+  expect(fitsDialog).toBe(true);
+  await page.keyboard.press("Escape");
+}
+
 test("adds, replaces and deletes a meal while preventing duplicate foods", async ({
   page,
 }, testInfo) => {
@@ -16,6 +44,7 @@ test("adds, replaces and deletes a meal while preventing duplicate foods", async
   await page.getByRole("link", { name: "Add meal" }).click();
   await expect(page.getByRole("heading", { name: "Add meal" })).toBeVisible();
 
+  await expectLongSearchResultToFitDialog(page);
   await addChickenSoup(page);
   await expect(page.getByText("1 food in this meal")).toBeVisible();
   await addChickenSoup(page);
