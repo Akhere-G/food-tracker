@@ -100,6 +100,7 @@ export const nutritionProfile = pgTable("nutrition_profile", {
 	completedAt: timestamp("completed_at", { withTimezone: true }).default(sql`now()`).notNull(),
 	createdAt: timestamp("created_at", { withTimezone: true }).default(sql`now()`).notNull(),
 	updatedAt: timestamp("updated_at", { withTimezone: true }).default(sql`now()`).notNull(),
+	nutritionPriorities: jsonb("nutrition_priorities").default(["balanced"]).notNull(),
 }, (table) => [
 	index("nutrition_profile_user_idx").using("btree", table.userId.asc().nullsLast()),
 	unique("nutrition_profile_user_unique").on(table.userId),check("nutrition_profile_weekly_change_range", sql`((requested_weekly_change_kg >= (0)::numeric) AND (requested_weekly_change_kg <= (2)::numeric))`),]);

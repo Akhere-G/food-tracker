@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { nutritionPeriodRange, parseNutritionPeriod } from "./period";
+import {
+  nutritionPeriodRange,
+  nutritionPickerAnchor,
+  parseNutritionPeriod,
+} from "./period";
 
 describe("nutrition periods", () => {
   it("uses Monday as the first day of a selected week", () => {
@@ -39,5 +43,18 @@ describe("nutrition periods", () => {
 
   it("falls back to the weekly view", () => {
     expect(parseNutritionPeriod("quarter")).toBe("week");
+  });
+
+  it.each([
+    ["day", "2026-11-18", "2026-11-18"],
+    ["week", "2026-W47", "2026-11-16"],
+    ["month", "2026-11", "2026-11-01"],
+    ["year", "2026", "2026-01-01"],
+  ] as const)("converts a %s picker value into an anchor", (period, value, anchor) => {
+    expect(nutritionPickerAnchor(period, value)).toBe(anchor);
+  });
+
+  it("rejects an incomplete picker value", () => {
+    expect(nutritionPickerAnchor("month", "")).toBeNull();
   });
 });

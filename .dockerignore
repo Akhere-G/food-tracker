@@ -39,6 +39,8 @@ npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
 
-# Docker
-Dockerfile*
-docker-compose*.yml
+# Generated design artifacts
+design-qa.md
+
+# End-to-end tests are not part of the runtime image
+e2e/

@@ -33,6 +33,7 @@ type MealEditorProps = {
   initialTime: string;
   energyUnit?: EnergyUnit;
   timezone: string;
+  resetEntriesAfterSubmit?: boolean;
 };
 
 export default function MealEditor({
@@ -48,6 +49,7 @@ export default function MealEditor({
   initialTime,
   energyUnit = "kcal",
   timezone,
+  resetEntriesAfterSubmit = false,
 }: MealEditorProps) {
   const [entries, setEntries] = useState(initialEntries);
   const [date, setDate] = useState(initialDate);
@@ -133,6 +135,7 @@ export default function MealEditor({
         return;
       }
 
+      if (resetEntriesAfterSubmit) setEntries([]);
       toast.success(successMessage);
       navigateToMeals();
     } catch (caught) {

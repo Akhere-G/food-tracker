@@ -18,6 +18,7 @@ export default function AddMealForm(props: AddMealFormProps) {
       successMessage="Meal added"
       summaryLabel="This meal — not saved yet"
       submitAction={saveMeal}
+      resetEntriesAfterSubmit
     />
   );
 }
