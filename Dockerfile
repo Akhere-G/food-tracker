@@ -1,31 +1,37 @@
-FROM node:22-alpine AS base
+# syntax=docker/dockerfile:1.7
 
-FROM base AS deps
+FROM node:26-slim AS base
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm i
+ENV NEXT_TELEMETRY_DISABLED=1
 
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+FROM base AS dependencies
+COPY package.json package-lock.json .npmrc ./
+RUN npm ci
+
+FROM dependencies AS builder
+ARG DEPLOYMENT_VERSION
+ENV DEPLOYMENT_VERSION=$DEPLOYMENT_VERSION
 COPY . .
-# Public PostHog values are inlined into the client bundle at build time.
-# ARG NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN
-# ARG NEXT_PUBLIC_POSTHOG_HOST
-# ENV NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN=$NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN
-# ENV NEXT_PUBLIC_POSTHOG_HOST=$NEXT_PUBLIC_POSTHOG_HOST
 RUN npm run build
 
-FROM base AS runner
+FROM dependencies AS migrator
+COPY db ./db
+COPY drizzle ./drizzle
+COPY drizzle.config.ts tsconfig.json ./
+USER node
+CMD ["npm", "run", "db:migrate"]
+
+FROM node:26-slim AS runner
 WORKDIR /app
-ENV NODE_ENV production
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    HOSTNAME=0.0.0.0 \
+    PORT=8080
 
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder --chown=node:node /app/public ./public
+COPY --from=builder --chown=node:node /app/.next/standalone ./
+COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 
-EXPOSE 3000
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
-
+USER node
+EXPOSE 8080
 CMD ["node", "server.js"]
