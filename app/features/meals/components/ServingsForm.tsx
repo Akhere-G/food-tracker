@@ -7,7 +7,7 @@ import { getFoodDetails } from "../../food/actions";
 import { FoodImportData } from "../../food/schemas";
 import { Input } from "@/components/ui/input";
 import { MealEntryData } from "../types";
-import Loader from "@/components/layout/Loader";
+import FoodLookupSkeleton from "./FoodLookupSkeleton";
 import { toast } from "sonner";
 import ErrorComponent from "@/components/layout/Error";
 
@@ -20,25 +20,34 @@ export default function ServingsForm({
   clearFoodItem: () => void;
   onSelectServing: (mealEntryData: MealEntryData) => void;
 }) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [foodData, setFoodData] = useState<null | FoodImportData>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [selectedServingId, setSelectedServingId] = useState("");
   const [amount, setAmount] = useState("1");
 
   useEffect(() => {
+    let active = true;
     async function getSearchResults() {
       setIsLoading(true);
-      const result = await getFoodDetails(foodSearchItem.slug);
-
-      if (result.success) {
-        setFoodData(result.data);
-      } else {
-        setErrorMessage(result.error);
+      setFoodData(null);
+      setErrorMessage("");
+      try {
+        const result = await getFoodDetails(foodSearchItem.slug);
+        if (!active) return;
+        if (result.success) {
+          setFoodData(result.data);
+        } else {
+          setErrorMessage(result.error);
+        }
+      } catch {
+        if (active) setErrorMessage("We could not load serving sizes. Go back and try again.");
+      } finally {
+        if (active) setIsLoading(false);
       }
-      setIsLoading(false);
     }
     getSearchResults();
+    return () => { active = false; };
   }, [foodSearchItem.slug]);
 
   const addFood = () => {
@@ -72,17 +81,17 @@ export default function ServingsForm({
   return (
     <div>
       <div className="flex items-center gap-2 mb-2">
-        <Button variant="ghost" onClick={clearFoodItem}>
-          <ArrowLeft />
+        <Button variant="ghost" onClick={clearFoodItem} aria-label="Back to food search">
+          <ArrowLeft aria-hidden="true" />
         </Button>
         <h3 className="text-lg">Add Serving</h3>
       </div>
 
-      {isLoading && <Loader />}
       {!!errorMessage && <ErrorComponent message={errorMessage} />}
       <div className={isLoading || !!errorMessage ? "mt-2" : ""}>
         <h4 className="mb-2">{foodSearchItem.name}</h4>
-        {!!foodData && (
+        {isLoading && <FoodLookupSkeleton label="Loading serving sizes…" />}
+        {!isLoading && !!foodData && (
           <div className="flex flex-col gap-2 overflow-y-scroll max-h-75">
             {foodData?.servings.map((serving) => (
               <Button
@@ -112,7 +121,7 @@ export default function ServingsForm({
             onChange={(e) => setAmount(e.target.value)}
             disabled={isLoading}
           />
-          <Button onClick={addFood} disabled={isLoading}>
+          <Button onClick={addFood} disabled={isLoading || !foodData}>
             Add Food
           </Button>
         </div>
