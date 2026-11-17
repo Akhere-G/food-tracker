@@ -30,6 +30,17 @@ test("adds, replaces and deletes a meal while preventing duplicate foods", async
     page.getByRole("article").getByText("Chicken soup", { exact: true }),
   ).toBeVisible();
 
+  await page.goBack();
+  await expect(page.getByRole("heading", { name: "Add meal" })).toBeVisible();
+  await expect(page.getByText("0 foods in this meal")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Add the first food to this meal" }),
+  ).toBeVisible();
+  await page.goForward();
+  await expect(
+    page.getByRole("article").getByText("Chicken soup", { exact: true }),
+  ).toBeVisible();
+
   await page.getByRole("link", { name: "Edit meal" }).click();
   await expect(
     page.getByRole("heading", { name: "Update meal" }),
