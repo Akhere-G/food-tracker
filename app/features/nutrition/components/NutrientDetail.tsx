@@ -18,8 +18,8 @@ export default function NutrientDetail({
     <section aria-labelledby="selected-nutrient-heading">
       <p className="text-sm font-medium text-primary">Selected nutrient</p>
       <div className="mt-1 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h2 id="selected-nutrient-heading" className="section-heading">
+        <div className="min-w-0">
+          <h2 id="selected-nutrient-heading" className="section-heading wrap-anywhere">
             {selected.name}
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
