@@ -27,7 +27,7 @@ export default function NutritionPeriodControls({
     `/nutrition?period=${nextPeriod}&date=${date}&nutrient=${encodeURIComponent(nutrient)}`;
 
   return (
-    <div className="grid gap-4 border-b py-5 lg:grid-cols-[auto_1fr] lg:items-center">
+    <div className="grid grid-cols-1 gap-4 border-b py-5 lg:grid-cols-[auto_1fr] lg:items-center">
       <div className="grid grid-cols-4 rounded-xl border p-1">
         {NUTRITION_PERIODS.map((item) => (
           <Link
@@ -44,7 +44,7 @@ export default function NutritionPeriodControls({
           </Link>
         ))}
       </div>
-      <div className="flex items-center justify-between gap-1 lg:justify-end">
+      <div className="flex min-w-0 items-center justify-between gap-1 lg:justify-end">
         <Link
           href={href(period, previous)}
           className="grid size-11 place-items-center rounded-lg hover:bg-muted"

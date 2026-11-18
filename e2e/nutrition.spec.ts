@@ -32,3 +32,42 @@ test("shows zero nutrient totals and updates period and nutrient views", async (
   ).toBeVisible();
   await expect(page.getByText("0 mg", { exact: true }).first()).toBeVisible();
 });
+
+test("keeps long nutrient titles within the mobile viewport", async ({
+  page,
+}, testInfo) => {
+  await registerWithNutritionPlan(page, testEmail(testInfo));
+
+  for (const width of [320, 375, 390]) {
+    await page.setViewportSize({ width, height: 812 });
+    for (const nutrient of [
+      "Monounsaturated fat",
+      "Polyunsaturated fat",
+      "Magnesium",
+      "Vitamin B12",
+    ]) {
+      await page.goto(`/nutrition?nutrient=${encodeURIComponent(nutrient)}`);
+      const heading = page.getByRole("heading", { name: nutrient, exact: true });
+      await expect(heading).toBeVisible();
+      await page.evaluate(() => document.fonts.ready);
+
+      const layout = await heading.evaluate((element) => {
+        const title = element.getBoundingClientRect();
+        const detail = element.closest("section")!.getBoundingClientRect();
+        return {
+          viewport: document.documentElement.clientWidth,
+          pageWidth: document.documentElement.scrollWidth,
+          titleRight: title.right,
+          detailRight: detail.right,
+          titleFits: element.scrollWidth <= element.clientWidth,
+        };
+      });
+      expect(layout.pageWidth, `${nutrient} at ${width}px`).toBeLessThanOrEqual(
+        layout.viewport,
+      );
+      expect(layout.titleRight).toBeLessThanOrEqual(layout.viewport);
+      expect(layout.detailRight).toBeLessThanOrEqual(layout.viewport);
+      expect(layout.titleFits).toBe(true);
+    }
+  }
+});

@@ -38,8 +38,8 @@ export default async function NutritionPage({
         nutrient={report.selected.key}
       />
       <NutritionSummaryBand report={report} />
-      <div className="grid gap-10 py-8 lg:grid-cols-[minmax(19rem,0.85fr)_minmax(30rem,1.4fr)] lg:gap-14">
-        <div className="order-2 border-t pt-8 lg:order-1 lg:border-t-0 lg:border-r lg:pr-12 lg:pt-0">
+      <div className="grid grid-cols-1 gap-10 py-8 lg:grid-cols-[minmax(19rem,0.85fr)_minmax(30rem,1.4fr)] lg:gap-14">
+        <div className="order-2 min-w-0 border-t pt-8 lg:order-1 lg:border-t-0 lg:border-r lg:pr-12 lg:pt-0">
           <NutrientLedger
             metrics={report.metrics}
             selectedNutrient={report.selected.key}
@@ -47,7 +47,7 @@ export default async function NutritionPage({
             anchor={range.anchor}
           />
         </div>
-        <div className="order-1 lg:order-2 lg:sticky lg:top-8 lg:self-start">
+        <div className="order-1 min-w-0 lg:order-2 lg:sticky lg:top-8 lg:self-start">
           <NutrientDetail report={report} period={period} />
         </div>
       </div>
