@@ -10,7 +10,7 @@ export default function MealDraftRow({
 }: {
   entry: MealEntryData;
   onRemove: () => void;
-  onAmountChange: (amount: number) => void;
+  onAmountChange: (amount: number | null) => void;
 }) {
   const totals = calculateDraftNutrients([entry]);
   const usesServing = Boolean(entry.mealEntryInput.serving);
@@ -31,7 +31,11 @@ export default function MealDraftRow({
             min="0.01"
             step={usesServing ? "0.25" : "1"}
             value={amount ?? ""}
-            onChange={(event) => onAmountChange(Number(event.target.value))}
+            onChange={(event) =>
+              onAmountChange(
+                event.target.value === "" ? null : Number(event.target.value),
+              )
+            }
           />
           {usesServing && <span>{entry.mealEntryInput.serving?.label.split(",")[0]}</span>}
         </label>

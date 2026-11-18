@@ -8,7 +8,7 @@ import type { EnergyUnit } from "@/app/features/settings/units";
 import { Button } from "@/components/ui/button";
 import type { ActionResult } from "@/lib/action";
 import { createMealRequest } from "../meal-request";
-import type { ReplaceMealRequest } from "../schemas";
+import { mealEntryInput, type ReplaceMealRequest } from "../schemas";
 import type { MealEntryData } from "../types";
 import AddFoodDialog from "./AddFoodDialog";
 import DeleteMealDialog from "./DeleteMealDialog";
@@ -89,9 +89,7 @@ export default function MealEditor({
     );
   }
 
-  function updateAmount(index: number, amount: number) {
-    if (!Number.isFinite(amount) || amount <= 0) return;
-
+  function updateAmount(index: number, amount: number | null) {
     setEntries((current) =>
       current.map((entry, itemIndex) => {
         if (itemIndex !== index) return entry;
@@ -108,9 +106,10 @@ export default function MealEditor({
           mealEntryInput: {
             ...entry.mealEntryInput,
             servingQuantity: serving ? amount : null,
-            amountInGrams: serving
-              ? Number(serving.amountInGrams) * amount
-              : amount,
+            amountInGrams:
+              serving && amount !== null
+                ? Number(serving.amountInGrams) * amount
+                : amount,
           },
         };
       }),
@@ -120,6 +119,13 @@ export default function MealEditor({
   async function submit() {
     if (entries.length === 0) {
       setError("Add at least one food before saving the meal.");
+      return;
+    }
+
+    if (
+      entries.some((entry) => !mealEntryInput.safeParse(entry.mealEntryInput).success)
+    ) {
+      toast.error("Enter a serving amount greater than zero for every food.");
       return;
     }
 

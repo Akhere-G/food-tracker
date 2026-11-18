@@ -7,7 +7,7 @@ type MealLedgerProps = {
   entries: MealEntryData[];
   addFoodAction: () => void;
   removeEntryAction: (index: number) => void;
-  updateAmountAction: (index: number, amount: number) => void;
+  updateAmountAction: (index: number, amount: number | null) => void;
 };
 
 export default function MealLedger({
